@@ -22,5 +22,10 @@ public class Laser : MonoBehaviour
     void DestroyLaser()
     {
         Destroy(gameObject);
+
+        if(gameObject.transform.parent != null)
+        {
+            Destroy(gameObject.transform.parent.gameObject);
+        }
     }
 }

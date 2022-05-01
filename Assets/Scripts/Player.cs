@@ -13,7 +13,10 @@ public class Player : MonoBehaviour
     [Header("Player Shooting")]
     [SerializeField] float fireRate = 0.1f;
     [SerializeField] GameObject laser;
+    [SerializeField] GameObject tripleShotLaser;
     [SerializeField] Transform laserPoint;
+    [SerializeField] float tripleShotDur = 3;
+    [SerializeField] bool tripleShot = false;
 
     [Header("Player Bounds")]
     [SerializeField] float minX;
@@ -35,7 +38,7 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        Vector2 move = new Vector2(horizontal, vertical);
+        Vector2 move = new Vector2(horizontal, vertical).normalized;
 
         transform.Translate(move * Time.deltaTime * speed);
 
@@ -64,7 +67,16 @@ public class Player : MonoBehaviour
 
     void PlayerShooting()
     {
-        GameObject curLaser = Instantiate(laser, laserPoint.position, Quaternion.identity);
+        if (tripleShot)
+        {
+            GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
+        }
+
+        else
+        {
+            GameObject curLaser = Instantiate(laser, laserPoint.position, Quaternion.identity);
+        }
+
         timeBetween = Time.time + fireRate;
     }
 
@@ -76,5 +88,19 @@ public class Player : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void TripleShot()
+    {
+        StartCoroutine(TripleShotDuration());
+    }
+
+    IEnumerator TripleShotDuration()
+    {
+        tripleShot = true;
+
+        yield return new WaitForSeconds(tripleShotDur);
+
+        tripleShot = false;
     }
 }
