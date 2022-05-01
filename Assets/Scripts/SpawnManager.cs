@@ -33,19 +33,4 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(3);
         }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Player>())
-        {
-            player.TakeDamage();
-            Destroy(gameObject);
-        }
-
-        if (other.GetComponent<Laser>())
-        {
-            Destroy(other.gameObject);
-            Destroy(gameObject);
-        }
-    }
 }
