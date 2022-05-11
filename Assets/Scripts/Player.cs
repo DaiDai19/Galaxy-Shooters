@@ -9,6 +9,9 @@ public class Player : MonoBehaviour
 
     [Header("Player Movmement")]
     [SerializeField] float speed = 7;
+    [SerializeField] float speedMultiplier = 1.5f;
+    [SerializeField] bool boosted = false;
+    [SerializeField] float speedDur = 3;
 
     [Header("Player Shooting")]
     [SerializeField] float fireRate = 0.1f;
@@ -25,11 +28,13 @@ public class Player : MonoBehaviour
     [SerializeField] float maxY;
 
     float timeBetween = 0;
+    float originalSpeed = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         timeBetween = fireRate;
+        originalSpeed = speed;
     }
 
     // Update is called once per frame
@@ -95,6 +100,11 @@ public class Player : MonoBehaviour
         StartCoroutine(TripleShotDuration());
     }
 
+    public void SpeedUp()
+    {
+        StartCoroutine(SpeedUpDuration());
+    }
+
     IEnumerator TripleShotDuration()
     {
         tripleShot = true;
@@ -102,5 +112,14 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(tripleShotDur);
 
         tripleShot = false;
+    }
+
+    IEnumerator SpeedUpDuration()
+    {
+        speed *= speedMultiplier;
+
+        yield return new WaitForSeconds(speedDur);
+
+        speed = originalSpeed;
     }
 }

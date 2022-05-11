@@ -490,6 +490,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerLives: 3
   speed: 5
+  speedMultiplier: 1.5
+  boosted: 0
+  speedDur: 3
   fireRate: 0.25
   laser: {fileID: 287241511086758454, guid: 2cdc375909ff66642a65d2466f3ca5a5, type: 3}
   tripleShotLaser: {fileID: 6619579593411759496, guid: 48015cb6c249cde4c954fec1e8395f8c, type: 3}
@@ -705,4 +708,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyContainer: {fileID: 608456856}
   enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
-  powerup: {fileID: 4084988850193494751, guid: 87872364770811c4394a4116a17eb382, type: 3}
+  powerup:
+  - {fileID: 4084988850193494751, guid: 87872364770811c4394a4116a17eb382, type: 3}
+  - {fileID: 468553640735187522, guid: 7145f276dad89b74f84530fc7103e02c, type: 3}
+  - {fileID: 0}
