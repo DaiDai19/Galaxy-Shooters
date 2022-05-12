@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
     [Header("Player Lives")]
     [SerializeField] int playerLives = 3;
+    [SerializeField] GameObject shield;
+    [SerializeField] bool shieldActivated = false;
 
     [Header("Player Movmement")]
     [SerializeField] float speed = 7;
@@ -87,6 +89,13 @@ public class Player : MonoBehaviour
 
     public void TakeDamage()
     {
+        if(shieldActivated)
+        {
+            shieldActivated = false;
+            shield.SetActive(false);
+            return;
+        }
+
         playerLives--;
 
         if(playerLives <= 0)
@@ -103,6 +112,12 @@ public class Player : MonoBehaviour
     public void SpeedUp()
     {
         StartCoroutine(SpeedUpDuration());
+    }
+
+    public void ActivateShield()
+    {
+        shieldActivated = true;
+        shield.SetActive(true);
     }
 
     IEnumerator TripleShotDuration()

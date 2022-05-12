@@ -25,7 +25,7 @@ public class Laser : MonoBehaviour
 
         if(gameObject.transform.parent != null)
         {
-            Destroy(gameObject.transform.parent.gameObject);
+            Destroy(transform.parent.gameObject);
         }
     }
 }
