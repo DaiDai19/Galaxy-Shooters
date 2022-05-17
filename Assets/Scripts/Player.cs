@@ -29,14 +29,23 @@ public class Player : MonoBehaviour
     [SerializeField] float minY;
     [SerializeField] float maxY;
 
+    [Header("Player Score")]
+    [SerializeField] int score = 0;
+
     float timeBetween = 0;
-    float originalSpeed = 0;
+
+    UIManager uiManager;
 
     // Start is called before the first frame update
     void Start()
     {
         timeBetween = fireRate;
-        originalSpeed = speed;
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        if (uiManager == null)
+        {
+            Debug.LogError("No UI Manager");
+        }
     }
 
     // Update is called once per frame
@@ -120,6 +129,12 @@ public class Player : MonoBehaviour
         shield.SetActive(true);
     }
 
+    public void IncreaseScore(int points)
+    {
+        score += points; 
+        uiManager.UpdateScore(score);
+    }
+
     IEnumerator TripleShotDuration()
     {
         tripleShot = true;
@@ -135,6 +150,6 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(speedDur);
 
-        speed = originalSpeed;
+        speed /= speedMultiplier;
     }
 }
