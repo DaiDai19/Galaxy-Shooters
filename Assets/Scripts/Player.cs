@@ -106,6 +106,7 @@ public class Player : MonoBehaviour
         }
 
         playerLives--;
+        uiManager.UpdateLives(playerLives);
 
         if(playerLives <= 0)
         {

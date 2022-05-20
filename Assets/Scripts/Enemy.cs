@@ -7,12 +7,26 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Speed")]
     [SerializeField] float speed = 3;
 
+    Animator anim;
+
     Player player;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
+        if (player == null)
+        {
+            Debug.LogError("Player does not exist.");
+        }
+
+        anim = GetComponentInChildren<Animator>();
+
+        if (anim == null)
+        {
+            Debug.LogError("Animator does not exist.");
+        }
     }
 
     // Update is called once per frame
@@ -32,6 +46,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void Destroy()
+    {
+        anim.SetTrigger("Explode");
+
+        GetComponent<BoxCollider2D>().enabled = false;
+        Destroy(gameObject, 2.4f);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<Player>())
@@ -41,7 +63,7 @@ public class Enemy : MonoBehaviour
             if (player != null)
             {
                 player.TakeDamage();
-                Destroy(gameObject);
+                Destroy();
             }
         }
 
@@ -49,7 +71,7 @@ public class Enemy : MonoBehaviour
         {
             Destroy(other.gameObject);
             player.IncreaseScore(Random.Range(10, 15));
-            Destroy(gameObject);
+            Destroy();
         }
     }
 }
