@@ -14,8 +14,12 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
+    }
+
+    public void StartSpawning()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         StartCoroutine(SpawnEnemy());
         StartCoroutine(SpawnPowerup());
     }

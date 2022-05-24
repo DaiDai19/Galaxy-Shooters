@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] int playerLives = 3;
     [SerializeField] GameObject shield;
     [SerializeField] bool shieldActivated = false;
+    [SerializeField] List<GameObject> damagedEngines;
 
     [Header("Player Movmement")]
     [SerializeField] float speed = 7;
@@ -103,6 +104,13 @@ public class Player : MonoBehaviour
             shieldActivated = false;
             shield.SetActive(false);
             return;
+        }
+
+        if (damagedEngines.Count > 0)
+        {
+            int randEngine = Random.Range(0, damagedEngines.Count);
+            damagedEngines[randEngine].SetActive(true);
+            damagedEngines.Remove(damagedEngines[randEngine]);
         }
 
         playerLives--;
