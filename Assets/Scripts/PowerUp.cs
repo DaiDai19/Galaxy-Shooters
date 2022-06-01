@@ -10,10 +10,14 @@ public class PowerUp : MonoBehaviour
     [Header("ID")]
     [SerializeField] int powerupID = 0;
 
+    [Header("Sound")]
+    [SerializeField] AudioClip clip;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -32,6 +36,9 @@ public class PowerUp : MonoBehaviour
         if (collision.GetComponent<Player>())
         {
             Player player = collision.GetComponent<Player>();
+
+            AudioSource aud = GetComponent<AudioSource>();
+
             if (player != null)
             {
                 switch (powerupID)
@@ -49,6 +56,7 @@ public class PowerUp : MonoBehaviour
                         break;
                 }
 
+                AudioSource.PlayClipAtPoint(clip, transform.position);
                 Destroy(gameObject);
             }
         }

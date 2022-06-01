@@ -20,6 +20,10 @@ public class Player : MonoBehaviour
     [SerializeField] float fireRate = 0.1f;
     [SerializeField] GameObject laser;
     [SerializeField] GameObject tripleShotLaser;
+
+    [SerializeField] AudioClip shootSound;
+
+    [SerializeField] AudioClip explosionSound;
     [SerializeField] Transform laserPoint;
     [SerializeField] float tripleShotDur = 3;
     [SerializeField] bool tripleShot = false;
@@ -37,6 +41,8 @@ public class Player : MonoBehaviour
 
     UIManager uiManager;
 
+    AudioSource aud;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +52,13 @@ public class Player : MonoBehaviour
         if (uiManager == null)
         {
             Debug.LogError("No UI Manager");
+        }
+
+        aud = GetComponent<AudioSource>();
+
+        if (aud == null)
+        {
+            Debug.LogError("No Audio Source on Player");
         }
     }
 
@@ -95,6 +108,8 @@ public class Player : MonoBehaviour
         }
 
         timeBetween = Time.time + fireRate;
+
+        aud.PlayOneShot(shootSound);
     }
 
     public void TakeDamage()
@@ -118,6 +133,7 @@ public class Player : MonoBehaviour
 
         if(playerLives <= 0)
         {
+            aud.PlayOneShot(explosionSound);
             Destroy(gameObject);
         }
     }

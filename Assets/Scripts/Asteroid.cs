@@ -26,9 +26,8 @@ public class Asteroid : MonoBehaviour
     {
         if (collision.GetComponent<Laser>())
         {
-            GameObject curEffect = Instantiate(explosionVFX, transform.position, Quaternion.identity);
+            Instantiate(explosionVFX, transform.position, Quaternion.identity);
             spawnManager.StartSpawning();
-            Destroy(curEffect, 2);
             Destroy(gameObject);
             Destroy(collision.gameObject); 
         }

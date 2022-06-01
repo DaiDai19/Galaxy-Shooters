@@ -7,8 +7,11 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Speed")]
     [SerializeField] float speed = 3;
 
-    Animator anim;
+    [Header("Damage")]
+    [SerializeField] AudioClip clip;
 
+    Animator anim;
+    AudioSource aud;
     Player player;
 
     // Start is called before the first frame update
@@ -26,6 +29,13 @@ public class Enemy : MonoBehaviour
         if (anim == null)
         {
             Debug.LogError("Animator does not exist.");
+        }
+
+        aud = GetComponent<AudioSource>();
+
+        if (aud == null)
+        {
+            Debug.LogError("Audio Source does not exist");
         }
     }
 
@@ -49,7 +59,7 @@ public class Enemy : MonoBehaviour
     void Destroy()
     {
         anim.SetTrigger("Explode");
-
+        aud.PlayOneShot(clip);
         GetComponent<BoxCollider2D>().enabled = false;
         Destroy(gameObject, 2.4f);
     }
