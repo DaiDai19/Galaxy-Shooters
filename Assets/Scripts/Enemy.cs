@@ -7,8 +7,15 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Speed")]
     [SerializeField] float speed = 3;
 
+    [Header("Enemy Shot")]
+    [SerializeField] float shotSpeed = 8;
+    [SerializeField] GameObject laser;
+    [SerializeField] Transform shootPos;
+    [SerializeField] float fireRate = 3;
+
     [Header("Damage")]
     [SerializeField] AudioClip clip;
+    [SerializeField] bool isAlive = true;
 
     Animator anim;
     AudioSource aud;
@@ -45,6 +52,31 @@ public class Enemy : MonoBehaviour
         transform.Translate(Vector2.down * speed * Time.deltaTime);
 
         EnemyBounds();
+
+        if (!isAlive)
+        {
+            return;
+        }
+
+        EnemyShoot();
+    }
+
+    void EnemyShoot()
+    {
+        if(fireRate < 0)
+        { 
+            fireRate = Random.Range(3, 7);
+            GameObject curShot = Instantiate(laser, shootPos.position, Quaternion.identity);
+            Laser[] lasers = curShot.GetComponentsInChildren<Laser>();
+
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].AssignLaser();
+            }
+            return;
+        }
+
+        fireRate -= Time.deltaTime;
     }
 
     void EnemyBounds()
@@ -81,6 +113,7 @@ public class Enemy : MonoBehaviour
         {
             Destroy(other.gameObject);
             player.IncreaseScore(Random.Range(10, 15));
+            isAlive = false;
             Destroy();
         }
     }
