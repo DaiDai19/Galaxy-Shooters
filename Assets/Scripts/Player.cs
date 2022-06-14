@@ -11,18 +11,24 @@ public class Player : MonoBehaviour
     [SerializeField] List<GameObject> damagedEngines;
 
     [Header("Player Movmement")]
-    [SerializeField] float speed = 7;
+    [SerializeField] float normalSpeed = 7;
     [SerializeField] float speedMultiplier = 1.5f;
     [SerializeField] bool boosted = false;
     [SerializeField] float speedDur = 3;
+
+    [Header("Player Thruster")]
+    [SerializeField] bool thrusting = false;
+    [SerializeField] float thrustSpeed = 10;
+
+    [Header("Shield Strength")]
+    [SerializeField] int shieldStrength = 3;
+    [SerializeField] Color[] strengthColor = new Color[3];
 
     [Header("Player Shooting")]
     [SerializeField] float fireRate = 0.1f;
     [SerializeField] GameObject laser;
     [SerializeField] GameObject tripleShotLaser;
-
     [SerializeField] AudioClip shootSound;
-
     [SerializeField] AudioClip explosionSound;
     [SerializeField] Transform laserPoint;
     [SerializeField] float tripleShotDur = 3;
@@ -39,8 +45,10 @@ public class Player : MonoBehaviour
 
     float timeBetween = 0;
 
-    UIManager uiManager;
+    float currentSpeed = 0;
 
+    UIManager uiManager;
+    Animator anim;
     AudioSource aud;
 
     // Start is called before the first frame update
@@ -60,6 +68,13 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("No Audio Source on Player");
         }
+
+        anim = GetComponentInChildren<Animator>();
+
+        if (anim == null)
+        {
+            Debug.LogError("No Animator on Player");
+        }
     }
 
     // Update is called once per frame
@@ -68,9 +83,15 @@ public class Player : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
+        thrusting = Input.GetKey(KeyCode.LeftShift);
+
         Vector2 move = new Vector2(horizontal, vertical).normalized;
 
-        transform.Translate(move * Time.deltaTime * speed);
+        transform.Translate(move * Time.deltaTime * currentSpeed);
+
+        currentSpeed = thrusting ? thrustSpeed : normalSpeed;
+
+        anim.SetBool("ThrusterBoost", thrusting);
 
         PlayerBounds();
 
@@ -116,8 +137,15 @@ public class Player : MonoBehaviour
     {
         if(shieldActivated)
         {
-            shieldActivated = false;
-            shield.SetActive(false);
+            shieldStrength--;
+            shield.GetComponent<SpriteRenderer>().color = strengthColor[shieldStrength];
+
+            if (shieldStrength <= 0)
+            {
+                shieldActivated = false;
+                shield.SetActive(false);
+            }
+
             return;
         }
 
@@ -150,6 +178,8 @@ public class Player : MonoBehaviour
 
     public void ActivateShield()
     {
+        shieldStrength = 3;
+        shield.GetComponent<SpriteRenderer>().color = strengthColor[shieldStrength];
         shieldActivated = true;
         shield.SetActive(true);
     }
@@ -171,10 +201,10 @@ public class Player : MonoBehaviour
 
     IEnumerator SpeedUpDuration()
     {
-        speed *= speedMultiplier;
+        normalSpeed *= speedMultiplier;
 
         yield return new WaitForSeconds(speedDur);
 
-        speed /= speedMultiplier;
+        normalSpeed /= speedMultiplier;
     }
 }
