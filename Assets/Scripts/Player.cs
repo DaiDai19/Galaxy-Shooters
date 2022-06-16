@@ -44,6 +44,8 @@ public class Player : MonoBehaviour
     [Header("Player Score")]
     [SerializeField] int score = 0;
 
+    float timeBetween = 0;
+
     int currentAmmo = 0;
     float timeBetween = 0;
     float currentSpeed = 0;
@@ -136,6 +138,7 @@ public class Player : MonoBehaviour
         }
 
         timeBetween = Time.time + fireRate;
+        aud.PlayOneShot(shootSound);
         aud.PlayOneShot(shootSound);
         currentAmmo--;
         uiManager.UpdateAmmo(currentAmmo);
