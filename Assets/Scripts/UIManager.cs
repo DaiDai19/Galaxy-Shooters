@@ -7,10 +7,7 @@ public class UIManager : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] Text scoreText;
-<<<<<<< HEAD
-=======
     [SerializeField] Text ammoText;
->>>>>>> dev
     [SerializeField] Sprite[] livesSprite;
     [SerializeField] Image livesImg;
     [SerializeField] GameObject gameOverPanel;
@@ -48,14 +45,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
-=======
     public void UpdateAmmo(int ammo)
     {
         ammoText.text = "Ammo: " + ammo.ToString();
     }
 
->>>>>>> dev
     void GameOverSequence()
     {
         gManager.GameOver();
