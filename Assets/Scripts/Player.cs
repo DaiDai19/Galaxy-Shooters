@@ -26,6 +26,10 @@ public class Player : MonoBehaviour
 
     [Header("Player Shooting")]
     [SerializeField] float fireRate = 0.1f;
+<<<<<<< HEAD
+=======
+    [SerializeField] int maxAmmo = 15;
+>>>>>>> dev
     [SerializeField] GameObject laser;
     [SerializeField] GameObject tripleShotLaser;
     [SerializeField] AudioClip shootSound;
@@ -43,8 +47,13 @@ public class Player : MonoBehaviour
     [Header("Player Score")]
     [SerializeField] int score = 0;
 
+<<<<<<< HEAD
     float timeBetween = 0;
 
+=======
+    int currentAmmo = 0;
+    float timeBetween = 0;
+>>>>>>> dev
     float currentSpeed = 0;
 
     UIManager uiManager;
@@ -55,6 +64,10 @@ public class Player : MonoBehaviour
     void Start()
     {
         timeBetween = fireRate;
+<<<<<<< HEAD
+=======
+        currentAmmo = maxAmmo;
+>>>>>>> dev
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if (uiManager == null)
@@ -118,6 +131,14 @@ public class Player : MonoBehaviour
 
     void PlayerShooting()
     {
+<<<<<<< HEAD
+=======
+        if(currentAmmo <= 0)
+        {
+            return;
+        }
+
+>>>>>>> dev
         if (tripleShot)
         {
             GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
@@ -129,8 +150,14 @@ public class Player : MonoBehaviour
         }
 
         timeBetween = Time.time + fireRate;
+<<<<<<< HEAD
 
         aud.PlayOneShot(shootSound);
+=======
+        aud.PlayOneShot(shootSound);
+        currentAmmo--;
+        uiManager.UpdateAmmo(currentAmmo);
+>>>>>>> dev
     }
 
     public void TakeDamage()
