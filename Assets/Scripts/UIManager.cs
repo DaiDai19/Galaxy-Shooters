@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] Text scoreText;
+    [SerializeField] Text ammoText;
     [SerializeField] Sprite[] livesSprite;
     [SerializeField] Image livesImg;
     [SerializeField] GameObject gameOverPanel;
@@ -21,6 +22,7 @@ public class UIManager : MonoBehaviour
         player = FindObjectOfType<Player>();
         gManager = FindObjectOfType<GameManager>();
         scoreText.text = "Score: " + 0;
+        ammoText.text = "Ammo: " + 15;
     }
 
     // Update is called once per frame
@@ -42,6 +44,11 @@ public class UIManager : MonoBehaviour
         {
             GameOverSequence();
         }
+    }
+
+    public void UpdateAmmo(int playerAmmo)
+    {
+        ammoText.text = "Ammo: " + playerAmmo.ToString();
     }
 
     void GameOverSequence()

@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField] Color[] strengthColor = new Color[3];
 
     [Header("Player Shooting")]
+    [SerializeField] int maxAmmo = 15;
     [SerializeField] float fireRate = 0.1f;
     [SerializeField] GameObject laser;
     [SerializeField] GameObject tripleShotLaser;
@@ -44,7 +45,7 @@ public class Player : MonoBehaviour
     [SerializeField] int score = 0;
 
     float timeBetween = 0;
-
+    int currentAmmo = 0;
     float currentSpeed = 0;
 
     UIManager uiManager;
@@ -55,6 +56,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         timeBetween = fireRate;
+        currentAmmo = maxAmmo;
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if (uiManager == null)
@@ -118,6 +120,11 @@ public class Player : MonoBehaviour
 
     void PlayerShooting()
     {
+        if (currentAmmo <= 0)
+        {
+            return;
+        }
+
         if (tripleShot)
         {
             GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
@@ -129,7 +136,8 @@ public class Player : MonoBehaviour
         }
 
         timeBetween = Time.time + fireRate;
-
+        currentAmmo--;
+        uiManager.UpdateAmmo(currentAmmo);
         aud.PlayOneShot(shootSound);
     }
 
