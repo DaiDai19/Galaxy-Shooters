@@ -54,6 +54,10 @@ public class PowerUp : MonoBehaviour
                     case 2:
                         player.ActivateShield();
                         break;
+
+                    case 3:
+                        player.AmmoRefill();
+                        break;
                 }
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);

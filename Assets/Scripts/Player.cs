@@ -198,6 +198,12 @@ public class Player : MonoBehaviour
         uiManager.UpdateScore(score);
     }
 
+    public void AmmoRefill()
+    {
+        currentAmmo = maxAmmo;
+        uiManager.UpdateAmmo(currentAmmo);
+    }
+
     IEnumerator TripleShotDuration()
     {
         tripleShot = true;
