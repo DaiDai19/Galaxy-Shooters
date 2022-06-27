@@ -58,6 +58,10 @@ public class PowerUp : MonoBehaviour
                     case 3:
                         player.AmmoRefill();
                         break;
+
+                    case 4:
+                        player.RecoverHealth();
+                        break;
                 }
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);

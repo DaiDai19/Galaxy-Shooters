@@ -450,7 +450,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1081,7 +1081,7 @@ Transform:
   m_GameObject: {fileID: 1005741989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.875, z: 0}
-  m_LocalScale: {x: 1.0781703, y: 1.115705, z: 1}
+  m_LocalScale: {x: 0.93669283, y: 0.96930224, z: 0.86878}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -1473,6 +1473,7 @@ MonoBehaviour:
   shield: {fileID: 1402643327}
   shieldActivated: 0
   damagedEngines:
+  - {fileID: 1488796234}
   - {fileID: 834308816}
   - {fileID: 1863647704}
   normalSpeed: 5
@@ -2263,6 +2264,7 @@ MonoBehaviour:
   - {fileID: 468553640735187522, guid: 7145f276dad89b74f84530fc7103e02c, type: 3}
   - {fileID: 4175351003527290891, guid: 67b661e4f5717374cbb2ec0b491f84b6, type: 3}
   - {fileID: 2432919518675485194, guid: 97df0b5fda0def044a6b2fc277cc17e2, type: 3}
+  - {fileID: 76774342956192566, guid: fdf2aba76b31b2e4b9405bc29915a75c, type: 3}
 --- !u!1001 &1393177940352593110
 PrefabInstance:
   m_ObjectHideFlags: 0

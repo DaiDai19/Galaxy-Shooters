@@ -157,12 +157,6 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if (damagedEngines.Count > 0)
-        {
-            int randEngine = Random.Range(0, damagedEngines.Count);
-            damagedEngines[randEngine].SetActive(true);
-            damagedEngines.Remove(damagedEngines[randEngine]);
-        }
 
         playerLives--;
         uiManager.UpdateLives(playerLives);
@@ -172,6 +166,19 @@ public class Player : MonoBehaviour
             aud.PlayOneShot(explosionSound);
             Destroy(gameObject);
         }
+        damagedEngines[playerLives].SetActive(true);
+    }
+
+    public void RecoverHealth()
+    {
+        if (playerLives >= 3)
+        {
+            return;
+        }
+
+        damagedEngines[playerLives].SetActive(false);
+        playerLives = Mathf.Min(playerLives + 1, 3);
+        uiManager.UpdateLives(playerLives);
     }
 
     public void TripleShot()
