@@ -1492,11 +1492,13 @@ MonoBehaviour:
   fireRate: 0.25
   laser: {fileID: 287241511086758454, guid: 2cdc375909ff66642a65d2466f3ca5a5, type: 3}
   tripleShotLaser: {fileID: 6619579593411759496, guid: 48015cb6c249cde4c954fec1e8395f8c, type: 3}
+  spreadShotLaser: {fileID: 6619579593411759496, guid: 0a607a15fed39c44081b5bd443e2f06d, type: 3}
   shootSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
   laserPoint: {fileID: 1700889266}
   tripleShotDur: 5
   tripleShot: 0
+  spreadShot: 0
   minX: -12
   maxX: 12
   minY: -4
@@ -2265,6 +2267,7 @@ MonoBehaviour:
   - {fileID: 4175351003527290891, guid: 67b661e4f5717374cbb2ec0b491f84b6, type: 3}
   - {fileID: 2432919518675485194, guid: 97df0b5fda0def044a6b2fc277cc17e2, type: 3}
   - {fileID: 76774342956192566, guid: fdf2aba76b31b2e4b9405bc29915a75c, type: 3}
+  specialPowerup: {fileID: 4084988850193494751, guid: b97b213ed73a2fc439c443a2c85df483, type: 3}
 --- !u!1001 &1393177940352593110
 PrefabInstance:
   m_ObjectHideFlags: 0

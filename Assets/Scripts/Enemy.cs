@@ -109,7 +109,7 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (other.GetComponent<Laser>())
+        if (other.GetComponent<Laser>() && !other.GetComponent<Laser>().EnemyLaser())
         {
             Destroy(other.gameObject);
             player.IncreaseScore(Random.Range(10, 15));

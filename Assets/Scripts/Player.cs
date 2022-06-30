@@ -29,11 +29,13 @@ public class Player : MonoBehaviour
     [SerializeField] float fireRate = 0.1f;
     [SerializeField] GameObject laser;
     [SerializeField] GameObject tripleShotLaser;
+    [SerializeField] GameObject spreadShotLaser;
     [SerializeField] AudioClip shootSound;
     [SerializeField] AudioClip explosionSound;
     [SerializeField] Transform laserPoint;
     [SerializeField] float tripleShotDur = 3;
     [SerializeField] bool tripleShot = false;
+    [SerializeField] bool spreadShot = false;
 
     [Header("Player Bounds")]
     [SerializeField] float minX;
@@ -130,9 +132,14 @@ public class Player : MonoBehaviour
             GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
         }
 
+        else if (spreadShot)
+        {
+            GameObject curSpread = Instantiate(spreadShotLaser, laserPoint.position, Quaternion.identity);
+        }
+
         else
         {
-            GameObject curLaser = Instantiate(laser, laserPoint.position, Quaternion.identity);
+            GameObject curLaser = Instantiate(laser, laserPoint.position, laser.transform.rotation);
         }
 
         timeBetween = Time.time + fireRate;
@@ -183,7 +190,16 @@ public class Player : MonoBehaviour
 
     public void TripleShot()
     {
+        if (spreadShot) return;
+
         StartCoroutine(TripleShotDuration());
+    }
+
+    public void SpreadShot()
+    {
+        if (tripleShot) return;
+
+        StartCoroutine(SpreadShotDuration());
     }
 
     public void SpeedUp()
@@ -218,6 +234,15 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(tripleShotDur);
 
         tripleShot = false;
+    }
+
+    IEnumerator SpreadShotDuration()
+    {
+        spreadShot = true;
+
+        yield return new WaitForSeconds(tripleShotDur);
+
+        spreadShot = false;
     }
 
     IEnumerator SpeedUpDuration()

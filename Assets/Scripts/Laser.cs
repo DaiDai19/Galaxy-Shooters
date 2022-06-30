@@ -30,12 +30,12 @@ public class Laser : MonoBehaviour
 
     void MoveUp()
     {
-        transform.Translate(Vector2.up * shootSpeed * Time.deltaTime);
+        transform.Translate(transform.up * shootSpeed * Time.deltaTime);
     }
 
     void MoveDown()
     {
-        transform.Translate(Vector2.down * shootSpeed * Time.deltaTime);
+        transform.Translate(-transform.up * shootSpeed * Time.deltaTime);
     }
 
     void DestroyLaser()
@@ -51,6 +51,11 @@ public class Laser : MonoBehaviour
     public void AssignLaser()
     {
         enemyShot = true;
+    }
+
+    public bool EnemyLaser()
+    {
+       return enemyShot;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

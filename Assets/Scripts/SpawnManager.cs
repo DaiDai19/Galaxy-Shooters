@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Transform enemyContainer;
     [SerializeField] GameObject enemy;
     [SerializeField] GameObject[] powerup;
+    [SerializeField] GameObject specialPowerup;
 
     Player player;
 
@@ -44,9 +45,20 @@ public class SpawnManager : MonoBehaviour
     {
         while (player != null)
         {
-            float rand = Random.Range(-7, 7);
+            float randPos = Random.Range(-7, 7);
             int randomPowerup = Random.Range(0, powerup.Length);
-            Instantiate(powerup[randomPowerup], new Vector3(rand, 10, 0), Quaternion.identity);
+            int specialPowerupRand = Random.Range(0, 100);
+
+            if (specialPowerupRand >= 90)
+            {
+                Instantiate(specialPowerup, new Vector3(randPos, 10, 0), Quaternion.identity);
+            }
+
+            else
+            {
+                Instantiate(powerup[randomPowerup], new Vector3(randPos, 10, 0), Quaternion.identity);
+            }
+
             yield return new WaitForSeconds(Random.Range(3, 7));
         }
     }

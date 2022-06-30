@@ -62,6 +62,10 @@ public class PowerUp : MonoBehaviour
                     case 4:
                         player.RecoverHealth();
                         break;
+
+                    case 5:
+                        player.SpreadShot();
+                        break;
                 }
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);
