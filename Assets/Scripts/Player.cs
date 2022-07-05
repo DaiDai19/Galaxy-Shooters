@@ -18,7 +18,11 @@ public class Player : MonoBehaviour
 
     [Header("Player Thruster")]
     [SerializeField] bool thrusting = false;
+    [SerializeField] bool hasThrust = true;
     [SerializeField] float thrustSpeed = 10;
+    [SerializeField] float maxThrustBoost = 50;
+    [SerializeField] Color[] thrustColor = new Color[2];
+    [SerializeField] float thrustMultiplier = 2.5f;
 
     [Header("Shield Strength")]
     [SerializeField] int shieldStrength = 3;
@@ -49,6 +53,7 @@ public class Player : MonoBehaviour
     float timeBetween = 0;
     int currentAmmo = 0;
     float currentSpeed = 0;
+    float thrustBoost;
 
     UIManager uiManager;
     Animator anim;
@@ -59,6 +64,9 @@ public class Player : MonoBehaviour
     {
         timeBetween = fireRate;
         currentAmmo = maxAmmo;
+
+        thrustBoost = maxThrustBoost;
+
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 
         if (uiManager == null)
@@ -79,6 +87,8 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("No Animator on Player");
         }
+
+        uiManager.SetMaxBooster(maxThrustBoost);
     }
 
     // Update is called once per frame
@@ -93,9 +103,15 @@ public class Player : MonoBehaviour
 
         transform.Translate(move * Time.deltaTime * currentSpeed);
 
-        currentSpeed = thrusting ? thrustSpeed : normalSpeed;
+        if (hasThrust)
+        {
+            ThrusterBoost();
+        }
 
-        anim.SetBool("ThrusterBoost", thrusting);
+        else
+        {
+            ThrustCoolDown();
+        }
 
         PlayerBounds();
 
@@ -148,6 +164,49 @@ public class Player : MonoBehaviour
         aud.PlayOneShot(shootSound);
     }
 
+    void ThrusterBoost()
+    {
+        if (thrusting)
+        {
+            thrustBoost -= Time.deltaTime * thrustMultiplier;
+
+            if (thrustBoost <= 0)
+            {
+                thrustBoost = 0;
+                hasThrust = false;
+                thrusting = false;
+            }
+        }
+
+        else
+        {
+            if (thrustBoost < maxThrustBoost)
+            {
+                thrustBoost += Time.deltaTime;
+            }
+        }
+
+        uiManager.ThrustColor(thrustColor[1]);
+
+        currentSpeed = thrusting ? thrustSpeed : normalSpeed;
+
+        anim.SetBool("ThrusterBoost", thrusting);
+        uiManager.UpdateBooster(thrustBoost);
+    }
+
+    void ThrustCoolDown()
+    {
+        uiManager.ThrustColor(thrustColor[0]);
+        thrustBoost += Time.deltaTime;
+        uiManager.UpdateBooster(thrustBoost);
+
+        if (thrustBoost >= maxThrustBoost)
+        {
+            thrustBoost = maxThrustBoost;
+            hasThrust = true;
+        }
+    }
+
     public void TakeDamage()
     {
         if(shieldActivated)
@@ -173,7 +232,9 @@ public class Player : MonoBehaviour
             aud.PlayOneShot(explosionSound);
             Destroy(gameObject);
         }
+
         damagedEngines[playerLives].SetActive(true);
+        CameraShake.instance.ShakeCamera();
     }
 
     public void RecoverHealth()

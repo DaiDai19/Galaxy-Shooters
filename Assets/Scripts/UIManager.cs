@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Image livesImg;
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject restartText;
+    [SerializeField] Image fillColor;
+    [SerializeField] Slider thrusterBar;
 
     Player player;
     GameManager gManager;
@@ -49,6 +51,21 @@ public class UIManager : MonoBehaviour
     public void UpdateAmmo(int playerAmmo)
     {
         ammoText.text = "Ammo: " + playerAmmo.ToString();
+    }
+
+    public void UpdateBooster(float amount)
+    {
+        thrusterBar.value = amount;
+    }
+
+    public void SetMaxBooster(float maxBoost)
+    {
+        thrusterBar.maxValue = maxBoost;
+    }
+
+    public void ThrustColor(Color thrustColor)
+    {
+        fillColor.color = thrustColor;
     }
 
     void GameOverSequence()
