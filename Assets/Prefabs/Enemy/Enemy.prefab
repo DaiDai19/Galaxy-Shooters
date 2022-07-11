@@ -205,6 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15933fbd4b1b51e44b34a27afb214317, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementID: 0
+  direction: {x: 1, y: -1}
   speed: 2
   shotSpeed: 5
   laser: {fileID: 8455844691592935678, guid: 41a3d674f9fa55b4599e1dc29996debd, type: 3}

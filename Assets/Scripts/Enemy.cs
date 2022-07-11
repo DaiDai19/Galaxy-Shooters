@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Movement Info")]
+    [SerializeField] int movementID;
+    [SerializeField] Vector2 direction;
+
     [Header("Enemy Speed")]
     [SerializeField] float speed = 3;
 
@@ -16,6 +20,8 @@ public class Enemy : MonoBehaviour
     [Header("Damage")]
     [SerializeField] AudioClip clip;
     [SerializeField] bool isAlive = true;
+
+    float changeDirTime = 1;
 
     Animator anim;
     AudioSource aud;
@@ -44,20 +50,36 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Audio Source does not exist");
         }
+
+        movementID = Random.Range(0, 2);
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector2.down * speed * Time.deltaTime);
-
-        EnemyBounds();
-
         if (!isAlive)
         {
             return;
         }
 
+        if (movementID == 0)
+        {
+            transform.Translate(Vector2.down * speed * Time.deltaTime);
+        }
+
+        else
+        {
+            transform.Translate(direction * speed * Time.deltaTime);
+            changeDirTime -= Time.deltaTime;
+
+            if (changeDirTime <= 0)
+            {
+                direction.x = -direction.x;
+                changeDirTime = 1;
+            }
+        }
+
+        EnemyBounds();
         EnemyShoot();
     }
 
