@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
 
         timeBetween = Time.time + fireRate;
         currentAmmo--;
-        uiManager.UpdateAmmo(currentAmmo);
+        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
         aud.PlayOneShot(shootSound);
     }
 
@@ -285,7 +285,7 @@ public class Player : MonoBehaviour
     public void AmmoRefill()
     {
         currentAmmo = maxAmmo;
-        uiManager.UpdateAmmo(currentAmmo);
+        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
     }
 
     IEnumerator TripleShotDuration()

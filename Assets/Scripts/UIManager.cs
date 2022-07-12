@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
         player = FindObjectOfType<Player>();
         gManager = FindObjectOfType<GameManager>();
         scoreText.text = "Score: " + 0;
-        ammoText.text = "Ammo: " + 15;
+        ammoText.text = "Ammo: " + 15 + "/" + 15;
     }
 
     // Update is called once per frame
@@ -48,9 +48,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateAmmo(int playerAmmo)
+    public void UpdateAmmo(int playerAmmo, int maxAmmo)
     {
-        ammoText.text = "Ammo: " + playerAmmo.ToString();
+        ammoText.text = "Ammo: " + playerAmmo.ToString() + "/" + maxAmmo.ToString();
     }
 
     public void UpdateBooster(float amount)
