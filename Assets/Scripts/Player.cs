@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] float speedMultiplier = 1.5f;
     [SerializeField] bool boosted = false;
     [SerializeField] float speedDur = 3;
+    [SerializeField] bool stunned = false;
 
     [Header("Player Thruster")]
     [SerializeField] bool thrusting = false;
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] float maxThrustBoost = 50;
     [SerializeField] Color[] thrustColor = new Color[2];
     [SerializeField] float thrustMultiplier = 2.5f;
+    [SerializeField] GameObject thruster;
 
     [Header("Shield Strength")]
     [SerializeField] int shieldStrength = 3;
@@ -94,6 +96,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (stunned)
+        {
+            return;
+        }
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -288,6 +295,11 @@ public class Player : MonoBehaviour
         uiManager.UpdateAmmo(currentAmmo, maxAmmo);
     }
 
+    public void Stun()
+    {
+        StartCoroutine(StunDuration());
+    }
+
     IEnumerator TripleShotDuration()
     {
         tripleShot = true;
@@ -313,5 +325,16 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(speedDur);
 
         normalSpeed /= speedMultiplier;
+    }
+
+    IEnumerator StunDuration()
+    {
+        stunned = true;
+        thruster.SetActive(false);
+
+        yield return new WaitForSeconds(2);
+
+        stunned = false;
+        thruster.SetActive(true);
     }
 }
