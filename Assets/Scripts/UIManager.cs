@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] Text scoreText;
     [SerializeField] Text ammoText;
+    [SerializeField] Text waveText;
     [SerializeField] Sprite[] livesSprite;
     [SerializeField] Image livesImg;
     [SerializeField] GameObject gameOverPanel;
@@ -56,6 +57,12 @@ public class UIManager : MonoBehaviour
     public void UpdateBooster(float amount)
     {
         thrusterBar.value = amount;
+    }
+
+    public void UpdateWave(int wave, bool enabled)
+    {
+        waveText.enabled = enabled;
+        waveText.text = "Wave " + wave.ToString();
     }
 
     public void SetMaxBooster(float maxBoost)

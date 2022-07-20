@@ -8,12 +8,12 @@ public class Asteroid : MonoBehaviour
     [SerializeField] float rotationSpeed = 5;
     [SerializeField] GameObject explosionVFX;
 
-    SpawnManager spawnManager;
+    WaveManager waveManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        spawnManager = FindObjectOfType<SpawnManager>();
+        waveManager = FindObjectOfType<WaveManager>();
     }
 
     // Update is called once per frame
@@ -27,7 +27,7 @@ public class Asteroid : MonoBehaviour
         if (collision.GetComponent<Laser>())
         {
             Instantiate(explosionVFX, transform.position, Quaternion.identity);
-            spawnManager.StartSpawning();
+            waveManager.StartSpawning();
             Destroy(gameObject);
             Destroy(collision.gameObject); 
         }
