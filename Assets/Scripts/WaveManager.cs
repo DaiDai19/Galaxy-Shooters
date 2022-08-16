@@ -48,7 +48,7 @@ public class WaveManager : MonoBehaviour
     {
         int currentAmountSpawned = 0;
 
-        while (player != null && !wave[waveCounter].finishSpawning)
+        while (player != null && !wave[waveCounter].SpawningFinished)
         {
             if (currentAmountSpawned < wave[waveCounter].EnemyAmount)
             {
@@ -61,7 +61,7 @@ public class WaveManager : MonoBehaviour
 
             else if(enemyContainer.childCount == 0)
             {
-                wave[waveCounter].finishSpawning = true;
+                wave[waveCounter].SpawningFinished = true;
                 yield return null;
             }
 
@@ -100,6 +100,8 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(3, 7));
         }
     }
+
+    public void Test() => Debug.Log("hi");
 }
 
 [System.Serializable]
@@ -107,7 +109,7 @@ public class Wave
 {
     [SerializeField] int amountToSpawn;
     [SerializeField] GameObject enemy;
-    public bool finishSpawning;
+    [SerializeField] bool finishSpawning;
 
     public int EnemyAmount
     {
@@ -122,6 +124,19 @@ public class Wave
         get
         {
             return enemy;
+        }
+    }
+
+    public bool SpawningFinished
+    {
+        get
+        {
+            return finishSpawning;
+        }
+
+        set
+        {
+            finishSpawning = value;
         }
     }
 }

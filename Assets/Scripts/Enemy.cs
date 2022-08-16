@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] GameObject laser;
     [SerializeField] Transform shootPos;
     [SerializeField] float fireRate = 3;
+    [SerializeField] bool canShoot;
+    [SerializeField] bool specialEnemy;
 
     [Header("Damage")]
     [SerializeField] AudioClip clip;
@@ -51,7 +53,10 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Audio Source does not exist");
         }
 
-        movementID = Random.Range(0, 2);
+        if (specialEnemy)
+        {
+            movementID = Random.Range(0, 2);
+        }
     }
 
     // Update is called once per frame
@@ -80,7 +85,11 @@ public class Enemy : MonoBehaviour
         }
 
         EnemyBounds();
-        EnemyShoot();
+
+        if (canShoot)
+        {
+            EnemyShoot();
+        }
     }
 
     void EnemyShoot()

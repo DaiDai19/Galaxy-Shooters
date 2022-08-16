@@ -28,15 +28,9 @@ public class Laser : MonoBehaviour
         }
     }
 
-    void MoveUp()
-    {
-        transform.Translate(transform.up * shootSpeed * Time.deltaTime);
-    }
+    void MoveUp() => transform.Translate(transform.up * shootSpeed * Time.deltaTime);
 
-    void MoveDown()
-    {
-        transform.Translate(-transform.up * shootSpeed * Time.deltaTime);
-    }
+    void MoveDown() => transform.Translate(-transform.up * shootSpeed * Time.deltaTime);
 
     void DestroyLaser()
     {

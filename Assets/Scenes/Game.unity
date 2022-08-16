@@ -2751,16 +2751,16 @@ MonoBehaviour:
   waveCounter: 0
   wave:
   - amountToSpawn: 3
-    enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
+    enemy: {fileID: 6091595725219203461, guid: 6c322aacce1ec1c47aca5f8c0d7796b0, type: 3}
     finishSpawning: 0
   - amountToSpawn: 5
-    enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
+    enemy: {fileID: 6091595725219203461, guid: 7acd41629e7dfb14dbdfa53ae305e2f0, type: 3}
     finishSpawning: 0
   - amountToSpawn: 7
     enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
     finishSpawning: 0
   - amountToSpawn: 9
-    enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
+    enemy: {fileID: 6091595725219203461, guid: 7acd41629e7dfb14dbdfa53ae305e2f0, type: 3}
     finishSpawning: 0
   - amountToSpawn: 11
     enemy: {fileID: 6091595725219203461, guid: 7824be5576d22014c815bff15801bcd5, type: 3}
