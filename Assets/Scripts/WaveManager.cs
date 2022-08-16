@@ -13,7 +13,8 @@ public class WaveManager : MonoBehaviour
     [Header("SpawnPool")]
     [SerializeField] Transform enemyContainer;
     [SerializeField] GameObject[] powerup;
-    [SerializeField] GameObject specialPowerup;
+
+    [SerializeField] GameObject[] specialPowerup;
 
     Player player;
     UIManager uiMan;
@@ -87,9 +88,11 @@ public class WaveManager : MonoBehaviour
             int randomPowerup = Random.Range(0, powerup.Length);
             int specialPowerupRand = Random.Range(0, 100);
 
+            int specialPowerupSpawn = Random.Range(0, specialPowerup.Length);
+
             if (specialPowerupRand >= 90)
             {
-                Instantiate(specialPowerup, new Vector3(randPos, 10, 0), Quaternion.identity);
+                Instantiate(specialPowerup[specialPowerupSpawn], new Vector3(randPos, 10, 0), Quaternion.identity);
             }
 
             else
@@ -100,8 +103,6 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(3, 7));
         }
     }
-
-    public void Test() => Debug.Log("hi");
 }
 
 [System.Serializable]

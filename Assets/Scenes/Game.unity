@@ -2769,12 +2769,13 @@ MonoBehaviour:
   enemyContainer: {fileID: 608456856}
   powerup:
   - {fileID: 2432919518675485194, guid: 97df0b5fda0def044a6b2fc277cc17e2, type: 3}
-  - {fileID: 76774342956192566, guid: fdf2aba76b31b2e4b9405bc29915a75c, type: 3}
   - {fileID: 4175351003527290891, guid: 67b661e4f5717374cbb2ec0b491f84b6, type: 3}
   - {fileID: 468553640735187522, guid: 7145f276dad89b74f84530fc7103e02c, type: 3}
   - {fileID: 4084988850193494751, guid: 87872364770811c4394a4116a17eb382, type: 3}
   - {fileID: 9002569243053327931, guid: 88244b42bcd602747b68e2b417137923, type: 3}
-  specialPowerup: {fileID: 4084988850193494751, guid: b97b213ed73a2fc439c443a2c85df483, type: 3}
+  specialPowerup:
+  - {fileID: 4084988850193494751, guid: b97b213ed73a2fc439c443a2c85df483, type: 3}
+  - {fileID: 76774342956192566, guid: fdf2aba76b31b2e4b9405bc29915a75c, type: 3}
 --- !u!1001 &1393177940352593110
 PrefabInstance:
   m_ObjectHideFlags: 0
