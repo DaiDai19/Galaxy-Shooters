@@ -19,6 +19,10 @@ public class Enemy : MonoBehaviour
     [SerializeField] bool canShoot;
     [SerializeField] bool specialEnemy;
 
+    [Header("Enenmy Shields")]
+    [SerializeField] GameObject shield;
+    [SerializeField] bool shieldActivated;
+
     [Header("Damage")]
     [SerializeField] AudioClip clip;
     [SerializeField] bool isAlive = true;
@@ -56,6 +60,8 @@ public class Enemy : MonoBehaviour
         if (specialEnemy)
         {
             movementID = Random.Range(0, 2);
+            shieldActivated = movementID > 0;
+            shield.SetActive(shieldActivated);
         }
     }
 
@@ -135,6 +141,13 @@ public class Enemy : MonoBehaviour
 
             if (player != null)
             {
+                if (shieldActivated)
+                {
+                    shield.SetActive(false);
+                    shieldActivated = false;
+                    return;
+                }
+
                 player.TakeDamage();
                 Destroy();
             }
@@ -142,6 +155,13 @@ public class Enemy : MonoBehaviour
 
         if (other.GetComponent<Laser>() && !other.GetComponent<Laser>().EnemyLaser())
         {
+            if (shieldActivated)
+            {
+                shield.SetActive(false);
+                shieldActivated = false;
+                return;
+            }
+
             Destroy(other.gameObject);
             player.IncreaseScore(Random.Range(10, 15));
             isAlive = false;
