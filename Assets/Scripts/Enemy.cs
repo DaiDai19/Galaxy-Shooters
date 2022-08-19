@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Enemy Speed")]
     [SerializeField] float speed = 3;
+    [SerializeField] float chargeSpeed = 6;
 
     [Header("Enemy Shot")]
     [SerializeField] float shotSpeed = 8;
@@ -18,6 +19,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float fireRate = 3;
     [SerializeField] bool canShoot;
     [SerializeField] bool specialEnemy;
+    [SerializeField] bool aggressive;
 
     [Header("Enenmy Shields")]
     [SerializeField] GameObject shield;
@@ -28,6 +30,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] bool isAlive = true;
 
     float changeDirTime = 1;
+    float aimingSpeed = 6;
+    Quaternion originalRot;
 
     Animator anim;
     AudioSource aud;
@@ -63,6 +67,8 @@ public class Enemy : MonoBehaviour
             shieldActivated = movementID > 0;
             shield.SetActive(shieldActivated);
         }
+
+        originalRot = transform.rotation;
     }
 
     // Update is called once per frame
@@ -75,6 +81,22 @@ public class Enemy : MonoBehaviour
 
         if (movementID == 0)
         {
+            if (aggressive && Vector2.Distance(transform.position, player.transform.position) < 3)
+            {
+                Vector3 moveDirection = (transform.position - player.transform.position).normalized;
+                Quaternion toRotation = Quaternion.LookRotation(transform.forward, moveDirection);
+
+                if (transform.rotation == toRotation)
+                {
+                    transform.Translate(Vector2.down * chargeSpeed * Time.deltaTime);
+                    return;
+                }
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, Time.deltaTime * aimingSpeed);
+
+                return;
+            }
+
             transform.Translate(Vector2.down * speed * Time.deltaTime);
         }
 
@@ -122,6 +144,7 @@ public class Enemy : MonoBehaviour
         {
             float rand = Random.Range(-9, 9);
             transform.position = new Vector3(rand, 8, 0);
+            transform.rotation = originalRot;
         }
     }
 

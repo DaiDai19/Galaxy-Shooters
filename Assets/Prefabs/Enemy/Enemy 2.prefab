@@ -212,6 +212,11 @@ MonoBehaviour:
   laser: {fileID: 8455844691592935678, guid: 41a3d674f9fa55b4599e1dc29996debd, type: 3}
   shootPos: {fileID: 8459222892131914360}
   fireRate: 3
+  canShoot: 0
+  specialEnemy: 0
+  aggressive: 1
+  shield: {fileID: 0}
+  shieldActivated: 0
   clip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
   isAlive: 1
 --- !u!82 &345091548195913412
