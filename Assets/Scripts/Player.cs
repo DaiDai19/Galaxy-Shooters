@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     [SerializeField] float tripleShotDur = 3;
     [SerializeField] bool tripleShot = false;
     [SerializeField] bool spreadShot = false;
+    [SerializeField] Vector2 shotDirection;
 
     [Header("Player Bounds")]
     [SerializeField] float minX;
@@ -91,6 +92,8 @@ public class Player : MonoBehaviour
         }
 
         uiManager.SetMaxBooster(maxThrustBoost);
+
+        shotDirection = transform.up;
     }
 
     // Update is called once per frame
@@ -153,16 +156,22 @@ public class Player : MonoBehaviour
         if (tripleShot)
         {
             GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
+            Laser laser = curTriple.GetComponent<Laser>();
+            laser.ShotDirection(shotDirection);
         }
 
         else if (spreadShot)
         {
             GameObject curSpread = Instantiate(spreadShotLaser, laserPoint.position, Quaternion.identity);
+            Laser laser = curSpread.GetComponent<Laser>();
+            laser.ShotDirection(shotDirection);
         }
 
         else
         {
             GameObject curLaser = Instantiate(laser, laserPoint.position, laser.transform.rotation);
+            Laser laserObj = curLaser.GetComponent<Laser>();
+            laserObj.ShotDirection(shotDirection);
         }
 
         timeBetween = Time.time + fireRate;

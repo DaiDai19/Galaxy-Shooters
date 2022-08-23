@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] bool canShoot;
     [SerializeField] bool specialEnemy;
     [SerializeField] bool aggressive;
+    [SerializeField] bool smart;
 
     [Header("Enenmy Shields")]
     [SerializeField] GameObject shield;
@@ -31,6 +32,7 @@ public class Enemy : MonoBehaviour
 
     float changeDirTime = 1;
     float aimingSpeed = 6;
+    bool playerDetectedBehind;
     Quaternion originalRot;
 
     Animator anim;
@@ -64,8 +66,12 @@ public class Enemy : MonoBehaviour
         if (specialEnemy)
         {
             movementID = Random.Range(0, 2);
-            shieldActivated = movementID > 0;
-            shield.SetActive(shieldActivated);
+
+            if (shield != null)
+            {
+                shieldActivated = movementID > 0;
+                shield.SetActive(shieldActivated);
+            }
         }
 
         originalRot = transform.rotation;
@@ -112,6 +118,24 @@ public class Enemy : MonoBehaviour
             }
         }
 
+        if (smart)
+        {
+            if (player != null)
+            {
+                Vector2 target = (transform.position - player.transform.position).normalized;
+
+                if (target.y > transform.position.y)
+                {
+                    playerDetectedBehind = true;
+                }
+
+                else
+                {
+                    playerDetectedBehind = false;
+                }
+            }
+        }
+
         EnemyBounds();
 
         if (canShoot)
@@ -123,16 +147,22 @@ public class Enemy : MonoBehaviour
     void EnemyShoot()
     {
         if(fireRate < 0)
-        { 
-            fireRate = Random.Range(3, 7);
-            GameObject curShot = Instantiate(laser, shootPos.position, Quaternion.identity);
-            Laser[] lasers = curShot.GetComponentsInChildren<Laser>();
+        {
+            Vector2 shotDirection = Vector2.up;
 
-            for (int i = 0; i < lasers.Length; i++)
+            fireRate = Random.Range(3, 7);
+            GameObject curShot = Instantiate(this.laser, shootPos.position, Quaternion.identity);
+            Laser laser = curShot.GetComponentInChildren<Laser>();
+
+            laser.AssignLaser();
+
+            if (playerDetectedBehind)
             {
-                lasers[i].AssignLaser();
+                laser.ShotDirection(-shotDirection);
+                return;
             }
-            return;
+
+            laser.ShotDirection(shotDirection);
         }
 
         fireRate -= Time.deltaTime;

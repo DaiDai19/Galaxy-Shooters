@@ -8,6 +8,8 @@ public class Laser : MonoBehaviour
     [SerializeField] float shootSpeed = 10;
     [SerializeField] bool enemyShot;
 
+    Vector2 direction;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,9 +30,9 @@ public class Laser : MonoBehaviour
         }
     }
 
-    void MoveUp() => transform.Translate(transform.up * shootSpeed * Time.deltaTime);
+    void MoveUp() => transform.Translate(direction * shootSpeed * Time.deltaTime);
 
-    void MoveDown() => transform.Translate(-transform.up * shootSpeed * Time.deltaTime);
+    void MoveDown() => transform.Translate(-direction * shootSpeed * Time.deltaTime);
 
     void DestroyLaser()
     {
@@ -40,6 +42,11 @@ public class Laser : MonoBehaviour
         {
             Destroy(transform.parent.gameObject);
         }
+    }
+
+    public void ShotDirection(Vector2 direction)
+    {
+        this.direction = direction;
     }
 
     public void AssignLaser()
