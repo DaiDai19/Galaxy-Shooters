@@ -76,5 +76,14 @@ public class PowerUp : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+
+        if (collision.GetComponent<Laser>())
+        {
+            if (collision.GetComponent<Laser>().EnemyLaser())
+            {
+                Destroy(collision.gameObject);
+                Destroy(gameObject);
+            }
+        }
     }
 }

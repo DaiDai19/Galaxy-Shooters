@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Enemy Shot")]
     [SerializeField] float shotSpeed = 8;
+    [SerializeField] float sightRange = 5;
     [SerializeField] GameObject laser;
     [SerializeField] Transform shootPos;
     [SerializeField] float fireRate = 3;
@@ -22,7 +23,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] bool aggressive;
     [SerializeField] bool smart;
 
-    [Header("Enenmy Shields")]
+    [Header("Enemy Shields")]
     [SerializeField] GameObject shield;
     [SerializeField] bool shieldActivated;
 
@@ -144,6 +145,11 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        DetectPowerup();
+    }
+
     void EnemyShoot()
     {
         if(fireRate < 0)
@@ -175,6 +181,28 @@ public class Enemy : MonoBehaviour
             float rand = Random.Range(-9, 9);
             transform.position = new Vector3(rand, 8, 0);
             transform.rotation = originalRot;
+        }
+    }
+
+    void DetectPowerup()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.up, sightRange);
+
+        if (hit && hit.collider.GetComponent<PowerUp>())
+        {
+            Vector2 shotDirection = Vector2.up;
+            GameObject curShot = Instantiate(this.laser, shootPos.position, Quaternion.identity);
+            Laser laser = curShot.GetComponentInChildren<Laser>();
+
+            laser.AssignLaser();
+
+            if (playerDetectedBehind)
+            {
+                laser.ShotDirection(-shotDirection);
+                return;
+            }
+
+            laser.ShotDirection(shotDirection);
         }
     }
 
@@ -220,5 +248,11 @@ public class Enemy : MonoBehaviour
             isAlive = false;
             Destroy();
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, -transform.up * 5);
     }
 }
