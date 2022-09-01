@@ -53,6 +53,11 @@ public class Player : MonoBehaviour
     [Header("Player Score")]
     [SerializeField] int score = 0;
 
+    [Header("Player Pickup")]
+    [SerializeField] List<PowerUp> currentPowerups = new List<PowerUp>();
+    [SerializeField] int pickUpSpeed = 5;
+    [SerializeField] int target;
+
     float timeBetween = 0;
     int currentAmmo = 0;
     float currentSpeed = 0;
@@ -128,6 +133,16 @@ public class Player : MonoBehaviour
         if(Input.GetButtonDown("Jump") && Time.time >= timeBetween)
         {
             PlayerShooting();
+        }
+
+        if (currentPowerups == null)
+            return;
+
+        LocateClosetPowerup();
+
+        if (Input.GetKey(KeyCode.C))
+        {
+            MovePickupTowardsPlayer();
         }
     }
 
@@ -223,6 +238,29 @@ public class Player : MonoBehaviour
         }
     }
 
+    void LocateClosetPowerup()
+    {
+        int closest = 9999;
+
+        target = 0;
+
+        for (int i = 0; i < currentPowerups.Count; i++)
+        {
+            int distance = (int)Vector3.Distance(transform.position, currentPowerups[i].transform.position);
+
+            if (distance < closest)
+            {
+                closest = distance;
+                target = i;
+            }
+        }
+    }
+
+    void MovePickupTowardsPlayer()
+    {
+        currentPowerups[target].transform.position = Vector3.MoveTowards(currentPowerups[target].transform.position, transform.position, pickUpSpeed * Time.deltaTime);
+    }
+
     public void TakeDamage()
     {
         if(shieldActivated)
@@ -307,6 +345,16 @@ public class Player : MonoBehaviour
     public void Stun()
     {
         StartCoroutine(StunDuration());
+    }
+
+    public void AddPowerup(PowerUp powerUp)
+    {
+        currentPowerups.Add(powerUp);
+    }
+
+    public void RemovePowerup(PowerUp powerUp)
+    {
+        currentPowerups.Remove(powerUp);
     }
 
     IEnumerator TripleShotDuration()

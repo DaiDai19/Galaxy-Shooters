@@ -13,11 +13,14 @@ public class PowerUp : MonoBehaviour
     [Header("Sound")]
     [SerializeField] AudioClip clip;
 
+    Player player;
+
 
     // Start is called before the first frame update
     void Start()
     {
-
+        player = FindObjectOfType<Player>();
+        player.AddPowerup(this);
     }
 
     // Update is called once per frame
@@ -27,6 +30,7 @@ public class PowerUp : MonoBehaviour
 
         if(transform.position.y < -7)
         {
+            player.RemovePowerup(this);
             Destroy(gameObject);
         }
     }
@@ -73,6 +77,7 @@ public class PowerUp : MonoBehaviour
                 }
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);
+                player.RemovePowerup(this);
                 Destroy(gameObject);
             }
         }
@@ -81,6 +86,7 @@ public class PowerUp : MonoBehaviour
         {
             if (collision.GetComponent<Laser>().EnemyLaser())
             {
+                player.RemovePowerup(this);
                 Destroy(collision.gameObject);
                 Destroy(gameObject);
             }
