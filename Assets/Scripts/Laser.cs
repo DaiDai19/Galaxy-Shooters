@@ -5,19 +5,19 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
     [Header("Laser Speed")]
-    [SerializeField] float shootSpeed = 10;
-    [SerializeField] bool enemyShot;
+    [SerializeField] private float shootSpeed = 10;
+    [SerializeField] private bool enemyShot;
 
-    Vector2 direction;
+    private Vector2 direction;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         Invoke("DestroyLaser", 2);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!enemyShot)
         {
@@ -30,11 +30,11 @@ public class Laser : MonoBehaviour
         }
     }
 
-    void MoveUp() => transform.Translate(direction * shootSpeed * Time.deltaTime);
+    private void MoveUp() => transform.Translate(direction * shootSpeed * Time.deltaTime);
 
-    void MoveDown() => transform.Translate(-direction * shootSpeed * Time.deltaTime);
+    private void MoveDown() => transform.Translate(-direction * shootSpeed * Time.deltaTime);
 
-    void DestroyLaser()
+    private void DestroyLaser()
     {
         Destroy(gameObject);
 
@@ -63,8 +63,8 @@ public class Laser : MonoBehaviour
     {
         if (collision.GetComponent<Player>() && enemyShot)
         {
-            Player player = collision.GetComponent<Player>();
-            player.TakeDamage();
+            PlayerLives playerLives = collision.GetComponent<PlayerLives>();
+            playerLives.TakeDamage();
         }
     }
 }

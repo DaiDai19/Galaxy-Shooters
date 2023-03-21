@@ -207,14 +207,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementID: 0
   direction: {x: 1, y: -1}
+  dodgeTime: 2
+  bounds:
+    minX: -9.5
+    maxX: 9.5
+    minY: -7
+    maxY: 0
   speed: 2
+  chargeSpeed: 20
+  dodgeSpeed: 4
   shotSpeed: 5
+  sightRange: 5
   laser: {fileID: 8455844691592935678, guid: 41a3d674f9fa55b4599e1dc29996debd, type: 3}
   shootPos: {fileID: 8459222892131914360}
   fireRate: 3
   canShoot: 0
+  canDodge: 1
   specialEnemy: 0
-  aggressive: 1
+  aggressive: 0
+  smart: 0
   shield: {fileID: 0}
   shieldActivated: 0
   clip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}

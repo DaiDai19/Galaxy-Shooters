@@ -6,32 +6,56 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] Text scoreText;
-    [SerializeField] Text ammoText;
-    [SerializeField] Text waveText;
-    [SerializeField] Sprite[] livesSprite;
-    [SerializeField] Image livesImg;
-    [SerializeField] GameObject gameOverPanel;
-    [SerializeField] GameObject restartText;
-    [SerializeField] Image fillColor;
-    [SerializeField] Slider thrusterBar;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private Text ammoText;
+    [SerializeField] private Text waveText;
+    [SerializeField] private Sprite[] livesSprite;
+    [SerializeField] private Image livesImg;
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject restartText;
+    [SerializeField] private Image fillColor;
+    [SerializeField] private Slider thrusterBar;
 
-    Player player;
-    GameManager gManager;
+    private Player player;
+    private PlayerLives playerLives;
+    private PlayerShoot playerShoot;
+    private GameManager gameManager;
+    private WaveManager waveManager;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         player = FindObjectOfType<Player>();
-        gManager = FindObjectOfType<GameManager>();
-        scoreText.text = "Score: " + 0;
-        ammoText.text = "Ammo: " + 15 + "/" + 15;
+        playerLives = FindObjectOfType<PlayerLives>();
+        playerShoot = FindObjectOfType<PlayerShoot>();
+        gameManager = FindObjectOfType<GameManager>();
+        waveManager = FindObjectOfType<WaveManager>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
+        player.OnBoosterUse += UpdateBooster;
+        player.OnScoreUpdate += UpdateScore;
+        player.OnSetBooster += SetMaxBooster;
+        playerLives.OnDamage += UpdateLives;
+        playerShoot.OnAmmoUse += UpdateAmmo;
+        waveManager.OnWaveChange += UpdateWave;
+    }
 
+    private void OnDisable()
+    {
+        player.OnBoosterUse -= UpdateBooster;
+        player.OnScoreUpdate -= UpdateScore;
+        player.OnSetBooster -= SetMaxBooster;
+        playerLives.OnDamage -= UpdateLives;
+        playerShoot.OnAmmoUse -= UpdateAmmo;
+        waveManager.OnWaveChange -= UpdateWave;
+    }
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        scoreText.text = "Score: " + 0;
+        ammoText.text = "Ammo: " + 15 + "/" + 15;
     }
 
     public void UpdateScore(int playerScore)
@@ -54,9 +78,10 @@ public class UIManager : MonoBehaviour
         ammoText.text = "Ammo: " + playerAmmo.ToString() + "/" + maxAmmo.ToString();
     }
 
-    public void UpdateBooster(float amount)
+    public void UpdateBooster(float amount, Color thrustColor)
     {
         thrusterBar.value = amount;
+        fillColor.color = thrustColor;
     }
 
     public void UpdateWave(int wave, bool enabled)
@@ -70,20 +95,15 @@ public class UIManager : MonoBehaviour
         thrusterBar.maxValue = maxBoost;
     }
 
-    public void ThrustColor(Color thrustColor)
+    private void GameOverSequence()
     {
-        fillColor.color = thrustColor;
-    }
-
-    void GameOverSequence()
-    {
-        gManager.GameOver();
+        gameManager.GameOver();
         gameOverPanel.SetActive(true);
         restartText.SetActive(true);
         StartCoroutine(BlinkingText());
     }
 
-    IEnumerator BlinkingText()
+    private IEnumerator BlinkingText()
     {
         while (true)
         {

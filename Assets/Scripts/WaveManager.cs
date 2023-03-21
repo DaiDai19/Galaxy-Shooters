@@ -2,59 +2,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
     [Header("Wave System")]
-    [SerializeField] int waveCounter = 0;
-    [SerializeField] Wave[] wave;
-    [SerializeField] bool isReseting;
+    [SerializeField] private int waveCounter = 0;
+    [SerializeField] private Wave[] wave;
+    [SerializeField] private bool isReseting;
 
     [Header("SpawnPool")]
-    [SerializeField] Transform enemyContainer;
-    [SerializeField] GameObject[] powerup;
+    [SerializeField] private Transform enemyContainer;
+    [SerializeField] private GameObject[] powerup;
+    [SerializeField] private GameObject[] specialPowerup;
 
-    [SerializeField] GameObject[] specialPowerup;
+    public event Action<int, bool> OnWaveChange;
 
-    Player player;
-    UIManager uiMan;
+    private Player player;
 
     public void StartSpawning()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        uiMan = GameObject.Find("Canvas").GetComponent<UIManager>();
         StartCoroutine(StartWave());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    IEnumerator StartWave()
+    private IEnumerator StartWave()
     {
         isReseting = true;
-        uiMan.UpdateWave(waveCounter + 1, true);
+        OnWaveChange?.Invoke(waveCounter + 1, true);
 
         yield return new WaitForSeconds(2);
 
         isReseting = false;
-        uiMan.UpdateWave(waveCounter, false);
+        OnWaveChange?.Invoke(waveCounter, false);
         StartCoroutine(SpawnEnemy());
         StartCoroutine(SpawnPowerup());
     }
 
-    IEnumerator SpawnEnemy()
+    private IEnumerator SpawnEnemy()
     {
         int currentAmountSpawned = 0;
 
-        while (player != null && !wave[waveCounter].SpawningFinished)
+        while (player != null && !wave[waveCounter].finishSpawning)
         {
-            if (currentAmountSpawned < wave[waveCounter].EnemyAmount)
+            if (currentAmountSpawned < wave[waveCounter].amountToSpawn)
             {
-                float rand = Random.Range(-9, 9);
-                Instantiate(wave[waveCounter].Enemy, new Vector3(rand, 10, 0), Quaternion.identity, enemyContainer.transform);
+                float rand = UnityEngine.Random.Range(-7, 7);
+                Instantiate(wave[waveCounter].enemy, new Vector3(rand, 10, 0), Quaternion.identity, enemyContainer.transform);
                 currentAmountSpawned++;
 
                 yield return new WaitForSeconds(3);
@@ -62,7 +56,7 @@ public class WaveManager : MonoBehaviour
 
             else if(enemyContainer.childCount == 0)
             {
-                wave[waveCounter].SpawningFinished = true;
+                wave[waveCounter].finishSpawning = true;
                 yield return null;
             }
 
@@ -80,15 +74,15 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnPowerup()
+    private IEnumerator SpawnPowerup()
     {
         while (player != null && !isReseting)
         {
-            float randPos = Random.Range(-7, 7);
-            int randomPowerup = Random.Range(0, powerup.Length);
-            int specialPowerupRand = Random.Range(0, 100);
+            float randPos = UnityEngine.Random.Range(-7, 7);
+            int randomPowerup = UnityEngine.Random.Range(0, powerup.Length);
+            int specialPowerupRand = UnityEngine.Random.Range(0, 100);
 
-            int specialPowerupSpawn = Random.Range(0, specialPowerup.Length);
+            int specialPowerupSpawn = UnityEngine.Random.Range(0, specialPowerup.Length);
 
             if (specialPowerupRand >= 90)
             {
@@ -100,44 +94,15 @@ public class WaveManager : MonoBehaviour
                 Instantiate(powerup[randomPowerup], new Vector3(randPos, 10, 0), Quaternion.identity);
             }
 
-            yield return new WaitForSeconds(Random.Range(3, 7));
+            yield return new WaitForSeconds(UnityEngine.Random.Range(3, 7));
         }
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class Wave
 {
-    [SerializeField] int amountToSpawn;
-    [SerializeField] GameObject enemy;
-    [SerializeField] bool finishSpawning;
-
-    public int EnemyAmount
-    {
-        get
-        {
-            return amountToSpawn;
-        }
-    }
-
-    public GameObject Enemy
-    {
-        get
-        {
-            return enemy;
-        }
-    }
-
-    public bool SpawningFinished
-    {
-        get
-        {
-            return finishSpawning;
-        }
-
-        set
-        {
-            finishSpawning = value;
-        }
-    }
+    public int amountToSpawn;
+    public GameObject enemy;
+    public bool finishSpawning;
 }

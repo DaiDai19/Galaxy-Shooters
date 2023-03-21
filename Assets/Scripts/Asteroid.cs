@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Asteroid : MonoBehaviour
 {
-    [SerializeField] float fallSpeed = 3;
-    [SerializeField] float rotationSpeed = 5;
-    [SerializeField] GameObject explosionVFX;
+    [SerializeField] private float fallSpeed = 3;
+    [SerializeField] private float rotationSpeed = 5;
+    [SerializeField] private GameObject explosionVFX;
 
-    WaveManager waveManager;
+    private WaveManager waveManager;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         transform.Rotate(Vector3.forward * rotationSpeed * Time.deltaTime);
     }

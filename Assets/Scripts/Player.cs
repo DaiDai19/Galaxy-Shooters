@@ -1,92 +1,72 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour
 {
-    [Header("Player Lives")]
-    [SerializeField] int playerLives = 3;
-    [SerializeField] GameObject shield;
-    [SerializeField] bool shieldActivated = false;
-    [SerializeField] List<GameObject> damagedEngines;
-
     [Header("Player Movmement")]
-    [SerializeField] float normalSpeed = 7;
-    [SerializeField] float speedMultiplier = 1.5f;
-    [SerializeField] bool boosted = false;
-    [SerializeField] float speedDur = 3;
-    [SerializeField] bool stunned = false;
+    [SerializeField] private float normalSpeed = 7;
+    [SerializeField] private float speedMultiplier = 1.5f;
+    [SerializeField] private bool boosted = false;
+    [SerializeField] private float speedDur = 3;
+    [SerializeField] private bool stunned = false;
 
     [Header("Player Thruster")]
-    [SerializeField] bool thrusting = false;
-    [SerializeField] bool hasThrust = true;
-    [SerializeField] float thrustSpeed = 10;
-    [SerializeField] float maxThrustBoost = 50;
-    [SerializeField] Color[] thrustColor = new Color[2];
-    [SerializeField] float thrustMultiplier = 2.5f;
-    [SerializeField] GameObject thruster;
+    [SerializeField] private bool thrusting = false;
+    [SerializeField] private bool hasThrust = true;
+    [SerializeField] private float thrustSpeed = 10;
+    [SerializeField] private float maxThrustBoost = 50;
+    [SerializeField] private Color[] thrustColor = new Color[2];
+    [SerializeField] private float thrustMultiplier = 2.5f;
+    [SerializeField] private GameObject thruster;
 
     [Header("Shield Strength")]
-    [SerializeField] int shieldStrength = 3;
-    [SerializeField] Color[] strengthColor = new Color[3];
-
-    [Header("Player Shooting")]
-    [SerializeField] int maxAmmo = 15;
-    [SerializeField] float fireRate = 0.1f;
-    [SerializeField] GameObject laser;
-    [SerializeField] GameObject tripleShotLaser;
-    [SerializeField] GameObject spreadShotLaser;
-    [SerializeField] AudioClip shootSound;
-    [SerializeField] AudioClip explosionSound;
-    [SerializeField] Transform laserPoint;
-    [SerializeField] float tripleShotDur = 3;
-    [SerializeField] bool tripleShot = false;
-    [SerializeField] bool spreadShot = false;
-    [SerializeField] Vector2 shotDirection;
+    [SerializeField] private int shieldStrength = 3;
+    [SerializeField] private Color[] strengthColor = new Color[3];
+    [SerializeField] private GameObject shield;
+    [SerializeField] private bool shieldActivated = false;
+    [SerializeField] private List<GameObject> damagedEngines;
 
     [Header("Player Bounds")]
-    [SerializeField] float minX;
-    [SerializeField] float maxX;
-    [SerializeField] float minY;
-    [SerializeField] float maxY;
+    [SerializeField] private Bounds playerBounds;
 
     [Header("Player Score")]
-    [SerializeField] int score = 0;
+    [SerializeField] private int score = 0;
 
     [Header("Player Pickup")]
-    [SerializeField] List<PowerUp> currentPowerups = new List<PowerUp>();
-    [SerializeField] int pickUpSpeed = 5;
-    [SerializeField] int target;
+    [SerializeField] private List<PowerUp> currentPowerups = new List<PowerUp>();
+    [SerializeField] private PowerUp closestPowerup;
+    [SerializeField] private int pickUpSpeed = 5;
 
-    float timeBetween = 0;
-    int currentAmmo = 0;
-    float currentSpeed = 0;
-    float thrustBoost;
+    public event Action<float> OnSetBooster;
+    public event Action<float, Color> OnBoosterUse;
+    public event Action<int> OnScoreUpdate;
 
-    UIManager uiManager;
-    Animator anim;
-    AudioSource aud;
+    public bool ShieldActivated { get => shieldActivated; }
 
-    // Start is called before the first frame update
-    void Start()
+    private float currentSpeed = 0;
+    private float thrustBoost;
+    private bool pullingPickup = false;
+
+    private Animator anim;
+    private PlayerLives playerLives;
+    private AudioSource aud;
+
+    private void Awake()
     {
-        timeBetween = fireRate;
-        currentAmmo = maxAmmo;
-
-        thrustBoost = maxThrustBoost;
-
-        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-
-        if (uiManager == null)
-        {
-            Debug.LogError("No UI Manager");
-        }
-
         aud = GetComponent<AudioSource>();
 
         if (aud == null)
         {
             Debug.LogError("No Audio Source on Player");
+        }
+
+        playerLives = GetComponent<PlayerLives>();
+
+        if (playerLives == null)
+        {
+            Debug.LogError("No Player Lives on Player");
         }
 
         anim = GetComponentInChildren<Animator>();
@@ -96,18 +76,27 @@ public class Player : MonoBehaviour
             Debug.LogError("No Animator on Player");
         }
 
-        uiManager.SetMaxBooster(maxThrustBoost);
-
-        shotDirection = transform.up;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        if (stunned)
-        {
-            return;
-        }
+        playerLives.OnShieldDamage += ShieldDamage;
+    }
+
+    private void OnDisable()
+    {
+        playerLives.OnShieldDamage -= ShieldDamage;
+    }
+
+    private void Start()
+    {
+        thrustBoost = maxThrustBoost;
+        OnSetBooster?.Invoke(maxThrustBoost);
+    }
+
+    private void Update()
+    {
+        if (stunned) return;
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -130,72 +119,50 @@ public class Player : MonoBehaviour
 
         PlayerBounds();
 
-        if(Input.GetButtonDown("Jump") && Time.time >= timeBetween)
-        {
-            PlayerShooting();
-        }
-
-        if (currentPowerups == null)
-            return;
-
-        LocateClosetPowerup();
-
-        if (Input.GetKey(KeyCode.C))
+        if (Input.GetKey(KeyCode.C) && LocateClosetPowerup() != null)
         {
             MovePickupTowardsPlayer();
         }
+
+        if (Input.GetKeyUp(KeyCode.C) && pullingPickup)
+        {
+            pullingPickup = false;
+        }
+
+        if (!pullingPickup)
+        {
+            closestPowerup = LocateClosetPowerup();
+        }
     }
 
-    void PlayerBounds()
+    private void PlayerBounds()
     {
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, minY, maxY), 0);
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, playerBounds.minY, playerBounds.maxY), 0);
 
-        if (transform.position.x > maxX)
+        if (transform.position.x > playerBounds.maxX)
         {
-            transform.position = new Vector3(minX, transform.position.y, transform.position.z);
+            transform.position = new Vector3(playerBounds.minX, transform.position.y, transform.position.z);
         }
 
-        if (transform.position.x < minX)
+        if (transform.position.x < playerBounds.minX)
         {
-            transform.position = new Vector3(maxX, transform.position.y, transform.position.z);
+            transform.position = new Vector3(playerBounds.maxX, transform.position.y, transform.position.z);
         }
     }
-
-    void PlayerShooting()
+   
+    private void ShieldDamage()
     {
-        if (currentAmmo <= 0)
-        {
-            return;
-        }
+        shieldStrength--;
+        shield.GetComponent<SpriteRenderer>().color = strengthColor[shieldStrength];
 
-        if (tripleShot)
+        if (shieldStrength <= 0)
         {
-            GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
-            Laser laser = curTriple.GetComponent<Laser>();
-            laser.ShotDirection(shotDirection);
+            shieldActivated = false;
+            shield.SetActive(false);
         }
-
-        else if (spreadShot)
-        {
-            GameObject curSpread = Instantiate(spreadShotLaser, laserPoint.position, Quaternion.identity);
-            Laser laser = curSpread.GetComponent<Laser>();
-            laser.ShotDirection(shotDirection);
-        }
-
-        else
-        {
-            GameObject curLaser = Instantiate(laser, laserPoint.position, laser.transform.rotation);
-            Laser laserObj = curLaser.GetComponent<Laser>();
-            laserObj.ShotDirection(shotDirection);
-        }
-
-        timeBetween = Time.time + fireRate;
-        currentAmmo--;
-        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
-        aud.PlayOneShot(shootSound);
     }
 
-    void ThrusterBoost()
+    private void ThrusterBoost()
     {
         if (thrusting)
         {
@@ -217,19 +184,15 @@ public class Player : MonoBehaviour
             }
         }
 
-        uiManager.ThrustColor(thrustColor[1]);
-
+        OnBoosterUse?.Invoke(thrustBoost, thrustColor[1]);
         currentSpeed = thrusting ? thrustSpeed : normalSpeed;
-
         anim.SetBool("ThrusterBoost", thrusting);
-        uiManager.UpdateBooster(thrustBoost);
     }
 
-    void ThrustCoolDown()
+    private void ThrustCoolDown()
     {
-        uiManager.ThrustColor(thrustColor[0]);
         thrustBoost += Time.deltaTime;
-        uiManager.UpdateBooster(thrustBoost);
+        OnBoosterUse?.Invoke(thrustBoost, thrustColor[0]);
 
         if (thrustBoost >= maxThrustBoost)
         {
@@ -238,83 +201,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    void LocateClosetPowerup()
+    private PowerUp LocateClosetPowerup()
     {
         int closest = 9999;
 
-        target = 0;
+        Collider2D[] targetColliders = Physics2D.OverlapCircleAll(transform.position, 10);
 
-        for (int i = 0; i < currentPowerups.Count; i++)
+        foreach (var col in targetColliders)
         {
-            int distance = (int)Vector3.Distance(transform.position, currentPowerups[i].transform.position);
-
-            if (distance < closest)
+            if (col.GetComponent<PowerUp>())
             {
-                closest = distance;
-                target = i;
+                int distance = (int)Vector3.Distance(transform.position, col.gameObject.transform.position);
+
+                if (distance < closest)
+                {
+                    return col.GetComponent<PowerUp>();
+                }
             }
         }
+
+        return null;
     }
 
-    void MovePickupTowardsPlayer()
-    {
-        currentPowerups[target].transform.position = Vector3.MoveTowards(currentPowerups[target].transform.position, transform.position, pickUpSpeed * Time.deltaTime);
-    }
-
-    public void TakeDamage()
-    {
-        if(shieldActivated)
-        {
-            shieldStrength--;
-            shield.GetComponent<SpriteRenderer>().color = strengthColor[shieldStrength];
-
-            if (shieldStrength <= 0)
-            {
-                shieldActivated = false;
-                shield.SetActive(false);
-            }
-
-            return;
-        }
-
-
-        playerLives--;
-        uiManager.UpdateLives(playerLives);
-
-        if(playerLives <= 0)
-        {
-            aud.PlayOneShot(explosionSound);
-            Destroy(gameObject);
-        }
-
-        damagedEngines[playerLives].SetActive(true);
-        CameraShake.instance.ShakeCamera();
-    }
-
-    public void RecoverHealth()
-    {
-        if (playerLives >= 3)
-        {
-            return;
-        }
-
-        damagedEngines[playerLives].SetActive(false);
-        playerLives = Mathf.Min(playerLives + 1, 3);
-        uiManager.UpdateLives(playerLives);
-    }
-
-    public void TripleShot()
-    {
-        if (spreadShot) return;
-
-        StartCoroutine(TripleShotDuration());
-    }
-
-    public void SpreadShot()
-    {
-        if (tripleShot) return;
-
-        StartCoroutine(SpreadShotDuration());
+    private void MovePickupTowardsPlayer()
+    { 
+        pullingPickup = true;
+        closestPowerup.transform.position = Vector3.MoveTowards(closestPowerup.transform.position, transform.position, pickUpSpeed * Time.deltaTime);
     }
 
     public void SpeedUp()
@@ -332,14 +244,8 @@ public class Player : MonoBehaviour
 
     public void IncreaseScore(int points)
     {
-        score += points; 
-        uiManager.UpdateScore(score);
-    }
-
-    public void AmmoRefill()
-    {
-        currentAmmo = maxAmmo;
-        uiManager.UpdateAmmo(currentAmmo, maxAmmo);
+        score += points;
+        OnScoreUpdate?.Invoke(score);
     }
 
     public void Stun()
@@ -349,33 +255,26 @@ public class Player : MonoBehaviour
 
     public void AddPowerup(PowerUp powerUp)
     {
+        if (currentPowerups.Contains(powerUp)) return;
+
         currentPowerups.Add(powerUp);
     }
 
     public void RemovePowerup(PowerUp powerUp)
     {
+        if (!currentPowerups.Contains(powerUp)) return;
+
         currentPowerups.Remove(powerUp);
     }
 
-    IEnumerator TripleShotDuration()
+    public void StopPullingPickup()
     {
-        tripleShot = true;
+        if (pullingPickup) return;
 
-        yield return new WaitForSeconds(tripleShotDur);
-
-        tripleShot = false;
+        pullingPickup = false;
     }
 
-    IEnumerator SpreadShotDuration()
-    {
-        spreadShot = true;
-
-        yield return new WaitForSeconds(tripleShotDur);
-
-        spreadShot = false;
-    }
-
-    IEnumerator SpeedUpDuration()
+    private IEnumerator SpeedUpDuration()
     {
         normalSpeed *= speedMultiplier;
 
@@ -384,7 +283,7 @@ public class Player : MonoBehaviour
         normalSpeed /= speedMultiplier;
     }
 
-    IEnumerator StunDuration()
+    private IEnumerator StunDuration()
     {
         stunned = true;
         thruster.SetActive(false);
@@ -394,4 +293,19 @@ public class Player : MonoBehaviour
         stunned = false;
         thruster.SetActive(true);
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 10);
+    }
+}
+
+[Serializable]
+public class Bounds
+{
+    public float minX;
+    public float maxX;
+    public float minY;
+    public float maxY;
 }

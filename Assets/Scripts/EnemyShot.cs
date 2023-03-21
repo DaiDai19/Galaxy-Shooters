@@ -5,21 +5,21 @@ using UnityEngine;
 public class EnemyShot : MonoBehaviour
 {
     [Header("Laser Speed")]
-    [SerializeField] float shootSpeed = 10;
+    [SerializeField] private float shootSpeed = 10;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         Invoke("DestroyLaser", 2);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         transform.Translate(Vector2.down * shootSpeed * Time.deltaTime);
     }
 
-    void DestroyLaser()
+    private void DestroyLaser()
     {
         Destroy(gameObject);
 
@@ -31,10 +31,10 @@ public class EnemyShot : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Player>())
+        if (collision.GetComponent<PlayerLives>())
         {
-            Player player = collision.GetComponent<Player>();
-            player.TakeDamage();
+            PlayerLives playerLives = collision.GetComponent<PlayerLives>();
+            playerLives.TakeDamage();
             Destroy(gameObject);
         }
     }

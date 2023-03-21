@@ -5,26 +5,25 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [Header("Speed")]
-    [SerializeField] float fallSpeed = 2;
+    [SerializeField] private float fallSpeed = 2;
 
     [Header("ID")]
-    [SerializeField] int powerupID = 0;
+    [SerializeField] private int powerupID = 0;
 
     [Header("Sound")]
-    [SerializeField] AudioClip clip;
+    [SerializeField] private AudioClip clip;
 
-    Player player;
-
+    private Player player;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         player = FindObjectOfType<Player>();
         player.AddPowerup(this);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         transform.Translate(Vector2.down * fallSpeed * Time.deltaTime);
 
@@ -40,15 +39,14 @@ public class PowerUp : MonoBehaviour
         if (collision.GetComponent<Player>())
         {
             Player player = collision.GetComponent<Player>();
-
-            AudioSource aud = GetComponent<AudioSource>();
+            PlayerShoot playerShoot = player.GetComponent<PlayerShoot>();
 
             if (player != null)
             {
                 switch (powerupID)
                 {
                     case 0:
-                        player.TripleShot();
+                        playerShoot.TripleShot();
                         break;
 
                     case 1:
@@ -60,15 +58,16 @@ public class PowerUp : MonoBehaviour
                         break;
 
                     case 3:
-                        player.AmmoRefill();
+                        playerShoot.AmmoRefill();
                         break;
 
                     case 4:
-                        player.RecoverHealth();
+                        PlayerLives playerLives = player.GetComponent<PlayerLives>();
+                        playerLives.RecoverHealth();
                         break;
 
                     case 5:
-                        player.SpreadShot();
+                        playerShoot.SpreadShot();
                         break;
 
                     case 6:
@@ -78,8 +77,10 @@ public class PowerUp : MonoBehaviour
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);
                 player.RemovePowerup(this);
+                player.StopPullingPickup();
                 Destroy(gameObject);
             }
+
         }
 
         if (collision.GetComponent<Laser>())
@@ -87,9 +88,12 @@ public class PowerUp : MonoBehaviour
             if (collision.GetComponent<Laser>().EnemyLaser())
             {
                 player.RemovePowerup(this);
+                player.StopPullingPickup();
                 Destroy(collision.gameObject);
                 Destroy(gameObject);
             }
+
+            player.StopPullingPickup();
         }
     }
 }

@@ -5,43 +5,53 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("Movement Info")]
-    [SerializeField] int movementID;
-    [SerializeField] Vector2 direction;
+    [SerializeField] private int movementID;
+    [SerializeField] private Vector2 direction;
+    [SerializeField] private float dodgeTime;
+
+    [Header("Enemy Bounds")]
+    [SerializeField] private Bounds bounds;
 
     [Header("Enemy Speed")]
-    [SerializeField] float speed = 3;
-    [SerializeField] float chargeSpeed = 6;
+    [SerializeField] private float speed = 3;
+    [SerializeField] private float chargeSpeed = 6;
+    [SerializeField] private float dodgeSpeed = 6;
 
     [Header("Enemy Shot")]
-    [SerializeField] float shotSpeed = 8;
-    [SerializeField] float sightRange = 5;
-    [SerializeField] GameObject laser;
-    [SerializeField] Transform shootPos;
-    [SerializeField] float fireRate = 3;
-    [SerializeField] bool canShoot;
-    [SerializeField] bool specialEnemy;
-    [SerializeField] bool aggressive;
-    [SerializeField] bool smart;
+    [SerializeField] private float shotSpeed = 8;
+    [SerializeField] private float sightRange = 5;
+    [SerializeField] private GameObject laser;
+    [SerializeField] private Transform shootPos;
+    [SerializeField] private float fireRate = 3;
+    [SerializeField] private bool canShoot;
+    [SerializeField] private bool canDodge;
+    [SerializeField] private bool specialEnemy;
+    [SerializeField] private bool aggressive;
+    [SerializeField] private bool smart;
 
     [Header("Enemy Shields")]
-    [SerializeField] GameObject shield;
-    [SerializeField] bool shieldActivated;
+    [SerializeField] private GameObject shield;
+    [SerializeField] private bool shieldActivated;
 
     [Header("Damage")]
-    [SerializeField] AudioClip clip;
-    [SerializeField] bool isAlive = true;
+    [SerializeField] private AudioClip clip;
+    [SerializeField] private bool isAlive = true;
 
-    float changeDirTime = 1;
-    float aimingSpeed = 6;
-    bool playerDetectedBehind;
-    Quaternion originalRot;
+    private float changeDirTime = 1;
+    private float aimingSpeed = 6;
+    private float curDodgeTime;
+    private int randomDirection;
+    private bool playerDetectedBehind;
+    private bool dodging;
+    private Vector2 dodgeDistance;
+    private Quaternion originalRot;
 
-    Animator anim;
-    AudioSource aud;
-    Player player;
+    private Animator anim;
+    private AudioSource aud;
+    private Player player;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
@@ -75,11 +85,17 @@ public class Enemy : MonoBehaviour
             }
         }
 
+        if (canDodge)
+        {
+            randomDirection = Random.Range(-3, 3);
+        }
+
         originalRot = transform.rotation;
+        curDodgeTime = dodgeTime;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!isAlive)
         {
@@ -88,6 +104,8 @@ public class Enemy : MonoBehaviour
 
         if (movementID == 0)
         {
+            if (dodging) return;
+
             if (aggressive && Vector2.Distance(transform.position, player.transform.position) < 3)
             {
                 Vector3 moveDirection = (transform.position - player.transform.position).normalized;
@@ -109,6 +127,8 @@ public class Enemy : MonoBehaviour
 
         else
         {
+            if (dodging) return;
+
             transform.Translate(direction * speed * Time.deltaTime);
             changeDirTime -= Time.deltaTime;
 
@@ -143,6 +163,11 @@ public class Enemy : MonoBehaviour
         {
             EnemyShoot();
         }
+
+        if (DetectLaser())
+        {
+            StartCoroutine(Dodge());
+        }
     }
 
     private void FixedUpdate()
@@ -150,7 +175,7 @@ public class Enemy : MonoBehaviour
         DetectPowerup();
     }
 
-    void EnemyShoot()
+    private void EnemyShoot()
     {
         if(fireRate < 0)
         {
@@ -174,9 +199,9 @@ public class Enemy : MonoBehaviour
         fireRate -= Time.deltaTime;
     }
 
-    void EnemyBounds()
+    private void EnemyBounds()
     {
-        if (transform.position.y < -7)
+        if (transform.position.y < bounds.minY)
         {
             float rand = Random.Range(-9, 9);
             transform.position = new Vector3(rand, 8, 0);
@@ -184,7 +209,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void DetectPowerup()
+    private void DetectPowerup()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.up, sightRange);
 
@@ -206,7 +231,49 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Destroy()
+    private bool DetectLaser()
+    {
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, 5, Vector2.down);
+
+        if (dodging) return false;
+
+        if (hit.collider.GetComponent<Laser>() && !hit.collider.GetComponent<Laser>().EnemyLaser())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private IEnumerator Dodge()
+    {
+        int randDirection = Random.Range(-3, 3);
+        int randChance = Random.Range(0, 10);
+
+        while (curDodgeTime > 1 && randChance >= 7)
+        {
+            curDodgeTime -= Time.deltaTime;
+            transform.Translate(Vector2.right * randDirection * dodgeSpeed * Time.deltaTime);
+            dodging = true;
+
+            if (transform.position.x > bounds.maxX)
+            {
+                transform.position = new Vector3(bounds.minX, transform.position.y, transform.position.z);
+            }
+
+            if (transform.position.x < bounds.minX)
+            {
+                transform.position = new Vector3(bounds.maxX, transform.position.y, transform.position.z);
+            }
+
+            yield return null;
+        }
+
+        curDodgeTime = dodgeTime;
+        dodging = false;
+    }
+
+    private void Destroy()
     {
         anim.SetTrigger("Explode");
         aud.PlayOneShot(clip);
@@ -216,11 +283,11 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.GetComponent<Player>())
+        if (other.GetComponent<PlayerLives>())
         {
-            Player player = other.GetComponent<Player>();
+            PlayerLives playerLives = other.GetComponent<PlayerLives>();
 
-            if (player != null)
+            if (playerLives != null)
             {
                 if (shieldActivated)
                 {
@@ -229,7 +296,7 @@ public class Enemy : MonoBehaviour
                     return;
                 }
 
-                player.TakeDamage();
+                playerLives.TakeDamage();
                 Destroy();
             }
         }
