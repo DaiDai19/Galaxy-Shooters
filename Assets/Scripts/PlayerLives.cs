@@ -41,7 +41,6 @@ public class PlayerLives : MonoBehaviour
         CameraShake.instance.ShakeCamera();
     }
 
-
     public void RecoverHealth()
     {
         if (playerLives >= 3)
@@ -50,7 +49,6 @@ public class PlayerLives : MonoBehaviour
         }
 
         playerLives = Mathf.Min(playerLives + 1, 3);
-        OnRecover?.Invoke(playerLives);
-        
+        OnRecover?.Invoke(playerLives);      
     }
 }

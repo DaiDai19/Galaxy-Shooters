@@ -24,7 +24,7 @@ public class Asteroid : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Laser>())
+        if (collision.GetComponent<IProjectile>() is IProjectile)
         {
             Instantiate(explosionVFX, transform.position, Quaternion.identity);
             waveManager.StartSpawning();

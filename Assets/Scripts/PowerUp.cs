@@ -73,6 +73,10 @@ public class PowerUp : MonoBehaviour
                     case 6:
                         player.Stun();
                         break;
+
+                    case 7: 
+                        playerShoot.MissileShot();
+                        break;
                 }
 
                 AudioSource.PlayClipAtPoint(clip, transform.position);

@@ -301,7 +301,7 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (other.GetComponent<Laser>() && !other.GetComponent<Laser>().EnemyLaser())
+        if (other.GetComponent<IProjectile>() is IProjectile && !other.GetComponent<IProjectile>().EnemyLaser())
         {
             if (shieldActivated)
             {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : MonoBehaviour
+public class Missile : MonoBehaviour, IProjectile
 {
     [SerializeField] private float moveSpeed = 10;
     [SerializeField] private float rotationSpeed = 10;
@@ -34,15 +34,22 @@ public class Missile : MonoBehaviour
     private void FollowEnemyPosition()
     {
         if (SetClosestEnemy() == null) return;
+
+        var enemyDirection = (currentEnemy.transform.position - transform.position).normalized;
+
+        Quaternion rot = Quaternion.LookRotation(transform.forward, enemyDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime); 
+
+        transform.Translate(enemyDirection * moveSpeed * Time.deltaTime);
     }
 
     private Enemy SetClosestEnemy()
     {
-        if (enemyTargeted) return null;
+        if (enemyTargeted) return currentEnemy;
 
         int closest = 9999;
 
-        Collider2D[] targetColliders = Physics2D.OverlapCircleAll(transform.position, 10);
+        Collider2D[] targetColliders = Physics2D.OverlapCircleAll(transform.position, lookRadius);
 
         foreach (var col in targetColliders)
         {
@@ -61,5 +68,15 @@ public class Missile : MonoBehaviour
 
         enemyTargeted = false;
         return null;
+    }
+
+    public void AssignLaser()
+    {
+
+    }
+
+    public bool EnemyLaser()
+    {
+        return false;
     }
 }

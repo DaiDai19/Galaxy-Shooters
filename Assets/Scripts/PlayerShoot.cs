@@ -15,7 +15,7 @@ public class PlayerShoot : MonoBehaviour
     [SerializeField] private AudioClip shootSound;
     [SerializeField] private AudioClip explosionSound;
     [SerializeField] private Transform laserPoint;
-    [SerializeField] private float tripleShotDur = 3;
+    [SerializeField] private float powerUpDuration = 3;
     [SerializeField] private bool tripleShot = false;
     [SerializeField] private bool spreadShot = false;
     [SerializeField] private bool missileShot = false;
@@ -78,9 +78,7 @@ public class PlayerShoot : MonoBehaviour
 
         else if (missileShot)
         {
-            GameObject curMissile = Instantiate(spreadShotLaser, laserPoint.position, Quaternion.identity);
-            Laser laser = curMissile.GetComponent<Laser>();
-            laser.ShotDirection(shotDirection);
+            Instantiate(missileShotLaser, laserPoint.position, Quaternion.identity);
         }
 
         else
@@ -97,17 +95,25 @@ public class PlayerShoot : MonoBehaviour
     }
     public void TripleShot()
     {
-        if (spreadShot) return;
+        if (spreadShot || missileShot) return;
 
         StartCoroutine(TripleShotDuration());
     }
 
     public void SpreadShot()
     {
-        if (tripleShot) return;
+        if (tripleShot || missileShot) return;
 
         StartCoroutine(SpreadShotDuration());
     }
+
+    public void MissileShot()
+    {
+        if (tripleShot || spreadShot) return;
+
+        StartCoroutine (MissileShotDuration());
+    }
+
     public void AmmoRefill()
     {
         currentAmmo = maxAmmo;
@@ -117,7 +123,7 @@ public class PlayerShoot : MonoBehaviour
     {
         tripleShot = true;
 
-        yield return new WaitForSeconds(tripleShotDur);
+        yield return new WaitForSeconds(powerUpDuration);
 
         tripleShot = false;
     }
@@ -126,8 +132,17 @@ public class PlayerShoot : MonoBehaviour
     {
         spreadShot = true;
 
-        yield return new WaitForSeconds(tripleShotDur);
+        yield return new WaitForSeconds(powerUpDuration);
 
         spreadShot = false;
+    }
+
+    private IEnumerator MissileShotDuration()
+    {
+        missileShot = true;
+
+        yield return new WaitForSeconds(powerUpDuration);
+
+        missileShot = false;
     }
 }

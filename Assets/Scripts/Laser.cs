@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Laser : MonoBehaviour
+public class Laser : MonoBehaviour, IProjectile
 {
     [Header("Laser Speed")]
     [SerializeField] private float shootSpeed = 10;
@@ -67,4 +67,10 @@ public class Laser : MonoBehaviour
             playerLives.TakeDamage();
         }
     }
+}
+
+public interface IProjectile
+{
+    public void AssignLaser();
+    public bool EnemyLaser();
 }

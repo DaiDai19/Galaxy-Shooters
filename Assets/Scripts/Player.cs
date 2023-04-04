@@ -75,7 +75,6 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("No Animator on Player");
         }
-
     }
 
     private void OnEnable()
