@@ -1,27 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraShake : MonoBehaviour
 {
-    public static CameraShake instance;
+    public static CameraShake Instance;
 
     [SerializeField] float duration;
     [SerializeField] float magnitude;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void ShakeCamera()
@@ -29,7 +21,7 @@ public class CameraShake : MonoBehaviour
         StartCoroutine(Shake());
     }
 
-    IEnumerator Shake()
+    private IEnumerator Shake()
     {
         Vector3 originalPos = transform.localPosition;
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -37,17 +36,14 @@ public class PlayerShoot : MonoBehaviour
             Debug.LogError("No Audio Source on Player");
         }
     }
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         timeBetween = fireRate;
         currentAmmo = maxAmmo;
         shotDirection = transform.up;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetButtonDown("Jump") && Time.time >= timeBetween)
         {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Missile : MonoBehaviour, IProjectile
@@ -7,9 +5,15 @@ public class Missile : MonoBehaviour, IProjectile
     [SerializeField] private float moveSpeed = 10;
     [SerializeField] private float rotationSpeed = 10;
     [SerializeField] private float lookRadius = 20;
-    [SerializeField] private Enemy currentEnemy;
 
     private bool enemyTargeted = false;
+
+    private Enemy currentEnemy;
+
+    private void Start()
+    {
+        Invoke(nameof(DestroySelf), 2f);
+    }
 
     private void Update()
     {
@@ -66,8 +70,19 @@ public class Missile : MonoBehaviour, IProjectile
             }
         }
 
+        if (currentEnemy.IsDead)
+        {
+            enemyTargeted = false;
+            return null;
+        }
+
         enemyTargeted = false;
         return null;
+    }
+
+    private void DestroySelf()
+    {
+        Destroy(gameObject);
     }
 
     public void AssignLaser()

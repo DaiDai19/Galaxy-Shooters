@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -37,12 +36,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] private AudioClip clip;
     [SerializeField] private bool isAlive = true;
 
+    public bool IsDead { get => IsDead; }    
+
     private float changeDirTime = 1;
     private float aimingSpeed = 6;
     private float curDodgeTime;
     private int randomDirection;
     private bool playerDetectedBehind;
     private bool dodging;
+    private bool isDead;
     private Vector2 dodgeDistance;
     private Quaternion originalRot;
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Laser : MonoBehaviour, IProjectile
@@ -13,7 +11,7 @@ public class Laser : MonoBehaviour, IProjectile
     // Start is called before the first frame update
     private void Start()
     {
-        Invoke("DestroyLaser", 2);
+        Invoke(nameof(DestroyLaser), 2);
     }
 
     // Update is called once per frame
@@ -64,7 +62,7 @@ public class Laser : MonoBehaviour, IProjectile
         if (collision.GetComponent<Player>() && enemyShot)
         {
             PlayerLives playerLives = collision.GetComponent<PlayerLives>();
-            playerLives.TakeDamage();
+            playerLives?.TakeDamage();
         }
     }
 }

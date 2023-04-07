@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -28,7 +26,6 @@ public class PlayerLives : MonoBehaviour
             return;
         }
 
-
         playerLives--;
         OnDamage?.Invoke(playerLives);
 
@@ -38,7 +35,7 @@ public class PlayerLives : MonoBehaviour
             Destroy(gameObject);
         }
 
-        CameraShake.instance.ShakeCamera();
+        CameraShake.Instance.ShakeCamera();
     }
 
     public void RecoverHealth()

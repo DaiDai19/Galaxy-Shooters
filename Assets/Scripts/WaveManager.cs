@@ -1,11 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance;
+
     [Header("Wave System")]
     [SerializeField] private int waveCounter = 0;
     [SerializeField] private Wave[] wave;
@@ -19,6 +19,14 @@ public class WaveManager : MonoBehaviour
     public event Action<int, bool> OnWaveChange;
 
     private Player player;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
 
     public void StartSpawning()
     {
