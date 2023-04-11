@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IEnemy
 {
     [Header("Movement Info")]
     [SerializeField] private int movementID;
@@ -177,7 +177,7 @@ public class Enemy : MonoBehaviour
         DetectPowerup();
     }
 
-    private void EnemyShoot()
+    public void EnemyShoot()
     {
         if(fireRate < 0)
         {
@@ -283,40 +283,38 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject, 2.4f);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void TakeDamage(Collider2D other)
     {
+        if (shieldActivated)
+        {
+            shield.SetActive(false);
+            shieldActivated = false;
+            return;
+        }
+
         if (other.GetComponent<PlayerLives>())
         {
             PlayerLives playerLives = other.GetComponent<PlayerLives>();
 
             if (playerLives != null)
             {
-                if (shieldActivated)
-                {
-                    shield.SetActive(false);
-                    shieldActivated = false;
-                    return;
-                }
-
                 playerLives.TakeDamage();
-                Destroy();
             }
         }
 
         if (other.GetComponent<IProjectile>() is IProjectile && !other.GetComponent<IProjectile>().EnemyLaser())
         {
-            if (shieldActivated)
-            {
-                shield.SetActive(false);
-                shieldActivated = false;
-                return;
-            }
-
             Destroy(other.gameObject);
             player.IncreaseScore(Random.Range(10, 15));
             isAlive = false;
-            Destroy();
         }
+
+        Destroy();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        TakeDamage(other);
     }
 
     private void OnDrawGizmos()
@@ -324,4 +322,10 @@ public class Enemy : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, -transform.up * 5);
     }
+}
+
+public interface IEnemy
+{
+    public void EnemyShoot();
+    public void TakeDamage(Collider2D target);
 }
