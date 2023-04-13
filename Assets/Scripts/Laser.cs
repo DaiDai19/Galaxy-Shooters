@@ -71,4 +71,6 @@ public interface IProjectile
 {
     public void AssignLaser();
     public bool EnemyLaser();
+
+    public void ShotDirection(Vector2 direction);
 }

@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour, IEnemy
     [SerializeField] private bool isAlive = true;
 
     public bool IsDead { get => IsDead; }    
+    public Vector3 CurrentPosition { get => transform.position; }
 
     private float changeDirTime = 1;
     private float aimingSpeed = 6;
@@ -314,7 +315,10 @@ public class Enemy : MonoBehaviour, IEnemy
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        TakeDamage(other);
+        if (other.GetComponent<IProjectile>() is IProjectile)
+        {
+            TakeDamage(other);
+        }
     }
 
     private void OnDrawGizmos()
@@ -326,6 +330,8 @@ public class Enemy : MonoBehaviour, IEnemy
 
 public interface IEnemy
 {
+    public Vector3 CurrentPosition { get; }
+
     public void EnemyShoot();
     public void TakeDamage(Collider2D target);
 }

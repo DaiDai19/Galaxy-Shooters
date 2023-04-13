@@ -8,7 +8,7 @@ public class Missile : MonoBehaviour, IProjectile
 
     private bool enemyTargeted = false;
 
-    private Enemy currentEnemy;
+    private IEnemy currentEnemy;
 
     private void Start()
     {
@@ -39,7 +39,7 @@ public class Missile : MonoBehaviour, IProjectile
     {
         if (SetClosestEnemy() == null) return;
 
-        var enemyDirection = (currentEnemy.transform.position - transform.position).normalized;
+        var enemyDirection = (currentEnemy.CurrentPosition - transform.position).normalized;
 
         Quaternion rot = Quaternion.LookRotation(transform.forward, enemyDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime); 
@@ -47,7 +47,7 @@ public class Missile : MonoBehaviour, IProjectile
         transform.Translate(enemyDirection * moveSpeed * Time.deltaTime);
     }
 
-    private Enemy SetClosestEnemy()
+    private IEnemy SetClosestEnemy()
     {
         if (enemyTargeted) return currentEnemy;
 
@@ -57,23 +57,17 @@ public class Missile : MonoBehaviour, IProjectile
 
         foreach (var col in targetColliders)
         {
-            if (col.GetComponent<Enemy>())
+            if (col.GetComponent<IEnemy>() is IEnemy)
             {
                 int distance = (int)Vector3.Distance(transform.position, col.gameObject.transform.position);
 
                 if (distance < closest)
                 {
-                    currentEnemy = col.GetComponent<Enemy>();
+                    currentEnemy = col.GetComponent<IEnemy>();
                     enemyTargeted = true;
                     return currentEnemy;
                 }
             }
-        }
-
-        if (currentEnemy.IsDead)
-        {
-            enemyTargeted = false;
-            return null;
         }
 
         enemyTargeted = false;
@@ -93,5 +87,10 @@ public class Missile : MonoBehaviour, IProjectile
     public bool EnemyLaser()
     {
         return false;
+    }
+
+    public void ShotDirection(Vector2 direction)
+    {
+
     }
 }
