@@ -18,14 +18,13 @@ public class WaveManager : MonoBehaviour
 
     public event Action<int, bool> OnWaveChange;
 
+    public Wave[] CurrentWave => wave;
+
     private Player player;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
+        Instance = this;
     }
 
     public void StartSpawning()

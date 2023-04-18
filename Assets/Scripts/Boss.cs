@@ -15,6 +15,7 @@ public class Boss : MonoBehaviour, IEnemy
 
     [SerializeField] private BossStates state;
     [SerializeField] private int maxHealth = 50;
+    [SerializeField] private int maxShieldHealth = 25;
     [SerializeField] private float moveInSpeed = 3;
     [SerializeField] private float moveSpeed = 6;
     [SerializeField] private float fireRate = 0.4f;
@@ -25,8 +26,12 @@ public class Boss : MonoBehaviour, IEnemy
     [SerializeField] private Bounds bounds;
 
     public event Action<int, int> OnHealthUpdate;
+    public event Action<int, int> OnShieldHealthUpdate;
+    public event Action<bool> OnHealthActivated;
+    public event Action<bool> OnShieldActivated;
 
     private int currentHealth = 0;
+    private int currentShieldHealth = 0;
     private float currentSpeed = 0;
     private float currentFireRate = 0;
     private bool moveRight;
@@ -58,6 +63,8 @@ public class Boss : MonoBehaviour, IEnemy
 
                 currentSpeed = moveInSpeed;
                 currentHealth = maxHealth;
+                currentShieldHealth = maxShieldHealth;
+                OnHealthActivated?.Invoke(true);
 
                 if (Vector3.Distance(transform.position, new Vector3(0, 3.5f, 0)) > 0.1f)
                 {
@@ -71,29 +78,44 @@ public class Boss : MonoBehaviour, IEnemy
                 break;
 
             case BossStates.NORMAL:
-
+                shield.SetActive(false);
+                OnShieldActivated?.Invoke(false);
+                OnHealthActivated?.Invoke(true);
                 currentSpeed = moveSpeed;
-                var moveDirection = moveRight ? Vector2.right : Vector2.left;
-                transform.Translate(moveDirection * currentSpeed * Time.deltaTime);
 
-                if (transform.position.x <= bounds.minX)
-                {
-                    moveRight = true;
-                }
-
-                else if (transform.position.x >= bounds.maxX)
-                {
-                    moveRight = false;
-                }
-
+                Movement();
                 EnemyShoot();
                 break;
                     
             case BossStates.FURIOUS:
+                shield.SetActive(true);
+                OnShieldActivated?.Invoke(true);
+                OnHealthActivated?.Invoke(false);
+                Movement();
+                EnemyShoot();
                 break;
                 
             case BossStates.END:
+                shield.SetActive(false);
+                OnShieldActivated?.Invoke(false);
+                OnHealthActivated?.Invoke(false);
                 break;
+        }
+    }
+
+    private void Movement()
+    {
+        var moveDirection = moveRight ? Vector2.right : Vector2.left;
+        transform.Translate(moveDirection * currentSpeed * Time.deltaTime);
+
+        if (transform.position.x <= bounds.minX)
+        {
+            moveRight = true;
+        }
+
+        else if (transform.position.x >= bounds.maxX)
+        {
+            moveRight = false;
         }
     }
 
@@ -118,8 +140,16 @@ public class Boss : MonoBehaviour, IEnemy
 
     public void TakeDamage(Collider2D target)
     {
-        if (shieldActivated)
+        if (shield.activeInHierarchy)
         {
+            currentShieldHealth = Mathf.Max(0, currentShieldHealth - 1);
+            OnShieldHealthUpdate?.Invoke(currentShieldHealth, maxShieldHealth);
+
+            if (currentShieldHealth <= 0)
+            {
+                EnterState(BossStates.NORMAL);
+            }
+
             return;
         }
 
@@ -148,6 +178,7 @@ public class Boss : MonoBehaviour, IEnemy
             }
 
             TakeDamage(collision);
+            Destroy(collision.gameObject);
         }
     }
 }

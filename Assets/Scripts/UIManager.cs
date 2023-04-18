@@ -86,8 +86,17 @@ public class UIManager : MonoBehaviour
 
     public void UpdateWave(int wave, bool enabled)
     {
-        waveText.enabled = enabled;
-        waveText.text = "Wave " + wave.ToString();
+        if (wave < WaveManager.Instance.CurrentWave.Length)
+        {
+            waveText.enabled = enabled;
+            waveText.text = "Wave " + wave.ToString();
+        }
+
+        else
+        {
+            waveText.enabled = enabled;
+            waveText.text = "Final Wave!";
+        }
     }
 
     public void SetMaxBooster(float maxBoost)
