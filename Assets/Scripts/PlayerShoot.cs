@@ -61,15 +61,23 @@ public class PlayerShoot : MonoBehaviour
         if (tripleShot)
         {
             GameObject curTriple = Instantiate(tripleShotLaser, laserPoint.position, Quaternion.identity);
-            Laser laser = curTriple.GetComponent<Laser>();
-            laser.ShotDirection(shotDirection);
+            Laser[] laser = curTriple.GetComponentsInChildren<Laser>();
+
+            foreach (var item in laser)
+            {
+                item.ShotDirection(shotDirection);
+            }
         }
 
         else if (spreadShot)
         {
             GameObject curSpread = Instantiate(spreadShotLaser, laserPoint.position, Quaternion.identity);
-            Laser laser = curSpread.GetComponent<Laser>();
-            laser.ShotDirection(shotDirection);
+            Laser[] laser = curSpread.GetComponentsInChildren<Laser>();
+
+            foreach (var item in laser)
+            {
+                item.ShotDirection(shotDirection);
+            }
         }
 
         else if (missileShot)

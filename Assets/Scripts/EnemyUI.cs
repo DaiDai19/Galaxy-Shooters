@@ -7,29 +7,9 @@ public class EnemyUI : MonoBehaviour
 {
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider shieldHealthBar;
+    [SerializeField] private GameObject enemyUI;
 
     private Boss boss;
-
-    private void Awake()
-    {
-        boss = GameObject.FindGameObjectWithTag("Boss").GetComponent<Boss>();
-    }
-
-    private void OnEnable()
-    {
-        boss.OnHealthUpdate += UpdateHealthBar;
-        boss.OnShieldHealthUpdate += UpdateShieldHealthBar;
-        boss.OnHealthActivated += OnHealthBarActivated;
-        boss.OnShieldActivated += OnShieldBarActivated;
-    }
-
-    private void OnDisable()
-    {
-        boss.OnHealthUpdate -= UpdateHealthBar;
-        boss.OnShieldHealthUpdate -= UpdateShieldHealthBar;
-        boss.OnHealthActivated -= OnHealthBarActivated;
-        boss.OnShieldActivated -= OnShieldBarActivated;
-    }
 
     private void UpdateHealthBar(int curHealth, int maxHealth)
     {
@@ -48,5 +28,29 @@ public class EnemyUI : MonoBehaviour
     private void OnShieldBarActivated(bool activate)
     {
         shieldHealthBar.gameObject.SetActive(activate);
+    }
+
+    public void SetBossForUI(Boss boss)
+    {
+        this.boss = boss;
+        enemyUI.SetActive(true);
+        EnableEvents();
+        //DisableEvents();
+    }
+
+    public void EnableEvents()
+    {
+        boss.OnHealthUpdate += UpdateHealthBar;
+        boss.OnShieldHealthUpdate += UpdateShieldHealthBar;
+        boss.OnHealthActivated += OnHealthBarActivated;
+        boss.OnShieldActivated += OnShieldBarActivated;
+    }
+
+    public void DisableEvents()
+    {
+        boss.OnHealthUpdate -= UpdateHealthBar;
+        boss.OnShieldHealthUpdate -= UpdateShieldHealthBar;
+        boss.OnHealthActivated -= OnHealthBarActivated;
+        boss.OnShieldActivated -= OnShieldBarActivated;
     }
 }

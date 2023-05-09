@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     private float currentSpeed = 0;
     private float thrustBoost;
     private bool pullingPickup = false;
+    private bool canMove = true;
 
     private Animator anim;
     private PlayerLives playerLives;
@@ -96,6 +97,13 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if (stunned) return;
+
+        if (!canMove)
+        {
+            currentSpeed += Time.deltaTime * 20;
+            transform.Translate(Vector2.up * Time.deltaTime * currentSpeed);
+            return;
+        }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -271,6 +279,19 @@ public class Player : MonoBehaviour
         if (pullingPickup) return;
 
         pullingPickup = false;
+    }
+
+    public void EndMovement()
+    {
+        StartCoroutine(DelayFinish());
+
+        IEnumerator DelayFinish()
+        {
+            yield return new WaitForSeconds(6);
+
+            canMove = false;
+            currentSpeed = 0;
+        }
     }
 
     private IEnumerator SpeedUpDuration()

@@ -315,7 +315,7 @@ public class Enemy : MonoBehaviour, IEnemy
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.GetComponent<IProjectile>() is IProjectile)
+        if (other)
         {
             TakeDamage(other);
         }

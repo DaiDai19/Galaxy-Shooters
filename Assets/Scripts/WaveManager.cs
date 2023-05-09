@@ -76,8 +76,18 @@ public class WaveManager : MonoBehaviour
         if (player != null)
         {
             waveCounter++;
-            StartCoroutine(StartWave());
-            yield return null;
+
+            if (waveCounter >= wave.Length - 1)
+            {
+                Debug.Log("Finished");
+            }
+
+            else
+            {
+
+                StartCoroutine(StartWave());
+                yield return null;
+            }
         }
     }
 

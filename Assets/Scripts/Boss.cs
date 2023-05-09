@@ -24,6 +24,7 @@ public class Boss : MonoBehaviour, IEnemy
     [SerializeField] private GameObject shield;
     [SerializeField] private bool shieldActivated = false;
     [SerializeField] private Bounds bounds;
+    [SerializeField] private EnemyUI enemyUI;
 
     public event Action<int, int> OnHealthUpdate;
     public event Action<int, int> OnShieldHealthUpdate;
@@ -35,8 +36,21 @@ public class Boss : MonoBehaviour, IEnemy
     private float currentSpeed = 0;
     private float currentFireRate = 0;
     private bool moveRight;
+    private Vector2 initialPosition;
 
     public Vector3 CurrentPosition => transform.position;
+
+    private Animator animator;
+    private Player player;
+
+    private void Awake()
+    {
+        enemyUI = FindObjectOfType<EnemyUI>();  
+        animator = GetComponentInChildren<Animator>();
+        player = FindObjectOfType<Player>();
+        enemyUI.SetBossForUI(this);
+        initialPosition = transform.position;
+    }
 
     private void Start()
     {
@@ -60,13 +74,12 @@ public class Boss : MonoBehaviour, IEnemy
         switch (newState)
         {
             case BossStates.INTRO:
-
                 currentSpeed = moveInSpeed;
                 currentHealth = maxHealth;
                 currentShieldHealth = maxShieldHealth;
                 OnHealthActivated?.Invoke(true);
 
-                if (Vector3.Distance(transform.position, new Vector3(0, 3.5f, 0)) > 0.1f)
+                if (Vector2.Distance(transform.position, new Vector2(transform.position.x, 3.5f)) > 0.1f)
                 {
                     transform.Translate(Vector2.down * currentSpeed * Time.deltaTime);
                 }
@@ -164,6 +177,10 @@ public class Boss : MonoBehaviour, IEnemy
         if(currentHealth <= 0)
         {
             EnterState(BossStates.END);
+            CameraShake.Instance.CameraShakeFinish();
+            animator.SetTrigger("Explode");
+            Destroy(gameObject, 6);
+            player.EndMovement();
         }
     }
 

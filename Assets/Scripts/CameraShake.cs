@@ -8,6 +8,8 @@ public class CameraShake : MonoBehaviour
     [SerializeField] float duration;
     [SerializeField] float magnitude;
 
+    private bool infiniteShake;
+
     private void Start()
     {
         if (Instance == null)
@@ -19,25 +21,52 @@ public class CameraShake : MonoBehaviour
     public void ShakeCamera()
     {
         StartCoroutine(Shake());
+
+        IEnumerator Shake()
+        {
+            Vector3 originalPos = transform.localPosition;
+
+            float elapsedTime = 0;
+            duration = 0.1f;
+
+            while (elapsedTime < duration)
+            {
+                float x = Random.Range(-0.25f, 0.25f) * magnitude;
+                float y = Random.Range(-0.25f, 0.25f) * magnitude;
+
+                transform.localPosition = new Vector3(x, y, originalPos.z);
+                elapsedTime += Time.deltaTime;
+
+                yield return null;
+            }
+
+            transform.localPosition = originalPos;
+        }
     }
 
-    private IEnumerator Shake()
+    public void CameraShakeFinish()
     {
-        Vector3 originalPos = transform.localPosition;
+        StartCoroutine(FinishShake());
 
-        float elapsedTime = 0;
-
-        while (elapsedTime < duration)
+        IEnumerator FinishShake()
         {
-            float x = Random.Range(-0.25f, 0.25f) * magnitude;
-            float y = Random.Range(-0.25f, 0.25f) * magnitude;
+            Vector3 originalPos = transform.localPosition;
 
-            transform.localPosition = new Vector3(x, y, originalPos.z);
-            elapsedTime += Time.deltaTime;
+            float elapsedTime = 0;
+            duration = 6f;
 
-            yield return null;
+            while (elapsedTime < duration)
+            {
+                float x = Random.Range(-0.25f, 0.25f) * magnitude;
+                float y = Random.Range(-0.25f, 0.25f) * magnitude;
+
+                transform.localPosition = new Vector3(x, y, originalPos.z);
+                elapsedTime += Time.deltaTime;
+
+                yield return null;
+            }
+
+            transform.localPosition = originalPos;
         }
-
-        transform.localPosition = originalPos;
     }
 }
