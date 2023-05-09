@@ -77,7 +77,7 @@ public class WaveManager : MonoBehaviour
         {
             waveCounter++;
 
-            if (waveCounter >= wave.Length - 1)
+            if (waveCounter > wave.Length - 1)
             {
                 Debug.Log("Finished");
             }

@@ -250,10 +250,10 @@ public class Enemy : MonoBehaviour, IEnemy
 
     private IEnumerator Dodge()
     {
-        int randDirection = Random.Range(-3, 3);
-        int randChance = Random.Range(0, 10);
+        int randDirection = Random.Range(-1, 1);
+        int randChance = Random.Range(0, 100);
 
-        while (curDodgeTime > 1 && randChance >= 7)
+        while (curDodgeTime > 1 && randChance >= 70)
         {
             curDodgeTime -= Time.deltaTime;
             transform.Translate(Vector2.right * randDirection * dodgeSpeed * Time.deltaTime);
